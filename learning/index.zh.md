@@ -26,7 +26,7 @@
 
 | 阶段 | 主题 | 状态 | 本区产出 |
 |---|---|---|---|
-| 0 | 日志锚点（入门第一步） | 待执行 | [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md) |
+| 0 | 日志锚点（入门第一步） | 完成 | [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)；[journal/2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) |
 | 1 | 仓库结构与无 key 启动 | 未开始 | — |
 | 2 | Cordis 框架 | 未开始 | — |
 | 3 | 核心 spine 与回合流 | 未开始 | — |
@@ -42,3 +42,4 @@
 | 主题 | 为什么重要 | 状态 | 相关产出 |
 |---|---|---|---|
 | agent-loop（含 headless-runner） | 回合引擎是 harness 最底层、最稳定的核心；runner 是其 one-shot 外壳，二者关系是理解"loop 可替换、能力外挂"的钥匙 | 待深入 | [journal/2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) |
+| agent / agent-loop 的分工（接口与实现分离） | `dsh-agent` 定义 `AgentFactory` 接口 + `AgentRegistry`（登记活体 agent 的仓库）；`dsh-agent-loop` 是接口的默认实现（工厂 + 引擎）。「登记」与「创建」分离，接口/实现分离是「loop 可替换」的根源。另：`inject:['agents']` 的 `agents` 是服务（`ctx.agents`），与 `config.agents:[]` 的配置数组同名不同物 | 待深入 | [journal/2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) |

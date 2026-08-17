@@ -51,6 +51,30 @@ dsh CLI（web 是硬编码别名）
 - 不拥有任何具体能力：工具是什么、沙箱怎么隔离、权限怎么审批，全由组合树里的 tools/sandbox/approval 等**外挂缝**提供。
 - 一句话：loop 是"完备的骨架"，能力是"外挂的缝"。
 
+## 两个 agents 的辨析（本轮追加，2026-08-17）
+
+`agent-loop/src/index.ts` 的 `static inject = ['agents', 'sessions', 'llm', 'tools', 'systemPrompt']` 里，`'agents'` 和 `config.agents: []` 里的 `agents` **同名不同物**：
+
+1. **`inject` 里的 `'agents'` 是一个「服务」**：类型是 `AgentRegistry`（`ctx.agents`），由 `@deepseek-ai/dsh-agent` 插件（组合树 `id: agent`）提供，职责是**登记活体 agent**（跟踪当前有哪些 agent 在跑，提供 `create`/`resume`/`get`）。证据：`packages/core/agent/src/index.ts` 的 `class AgentRegistry extends Service { super(ctx, 'agents') }`。
+2. **`config.agents: []` 是一个「配置数组」**：`agent-loop` 插件自己的字段，表示「启动时预置几个声明式 agent」，默认空 = 全按需。
+
+## AgentFactory 接口 / 实现分离（本轮追加，2026-08-17）
+
+「登记」和「创建」是两个包的两种职责，靠接口分离：
+
+- `dsh-agent` 定义抽象接口 `AgentFactory`（`create` / `resume`）+ `AgentRegistry`（登记仓库）。
+- `dsh-agent-loop` 是接口的**默认实现**（`class AgentLoop extends Service implements AgentFactory`），通过 `setFactory` 把自己注册进 `AgentRegistry`，负责真正造 agent、驱动 turn/step。
+
+所以「默认的 agent-loop」的精确含义：**不是代码里写死唯一，而是预设组合树里选用了 `dsh-agent-loop` 作为 `AgentFactory` 的实现**。理论上任何实现 `AgentFactory` 的插件都能在组合树里替换它——这正是「loop 可替换」的根源（接口与实现分离）。
+
+三者合一才是完整的 agent-loop 系统：
+
+```
+AgentRegistry（ctx.agents 服务） = 仓库（登记活体 agent）
+agent-loop（实现 AgentFactory）  = 工厂 + 引擎（创建 + 驱动）
+config.agents: []               = 配置（开工时预置几个 agent，默认 0）
+```
+
 ## loop 的启动与收敛（turn 是怎么开、怎么结束的）
 
 追问"turn 何时被谁建立、空 turn 会不会挂死"，落到 `agent.ts` 的真实时序：
@@ -73,5 +97,4 @@ dsh CLI（web 是硬编码别名）
 
 ## 待办
 
-- 实验 001 第 3 步"精读日志"尚未开始（33 行 jsonl 逐行对照映射表）。
 - agent-loop / headless-runner 已标记为重点学习对象（见重点清单）。

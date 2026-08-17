@@ -1,7 +1,7 @@
 # 实验 001：一条会话日志建立全局锚点
 
 - 日期：2026-08-16
-- 状态：已设计，待执行
+- 状态：已完成（2026-08-17）
 - 前置：无 `DEEPSEEK_API_KEY` 也可完成（材料是 keyless 快照期望输出）
 - 对应路线：阶段 0（learning-path"读者与前置"一节指向本实验）；同时是阶段 1 架构总览、阶段 3 回合流的实物预演
 
@@ -41,13 +41,18 @@
 
 ## 观察（执行后填写）
 
-- 第 1 步（三条命令的实际结果）：
+- 第 1 步（三条命令的实际结果）：已跑通机器（typecheck / test）；Windows 下 snapshot 有环境性失败（见下）。
 - 第 2 步（组合树里最意外的一行）：
-- 第 3 步（映射表对不上的行）：
-- 第 4 步（三问：猜测 → 核对结果）：
-- 第 5 步（snapshot 是否绿灯）：
+  - `agent-default-model` 的 config 是 `provider: deepseek-official / model: deepseek-v4-flash`，而精读的快照日志是 `cli-mock`——因为快照测试用 `--patch`（headless-profile.cordis.yml）把默认模型覆盖成了 mock。「默认视图 vs 快照视图」的差异。
+  - `agent-loop` 的 `config.agents: []` 是空数组——不是「没有 agent-loop」，而是「没有『启动时预置』的声明式 agent」。`agent-loop` 是完备的循环引擎（inject `agents/sessions/llm/tools/systemPrompt`，按需创建 agent 并驱动 turn/step），`config.agents` 只是可选的「启动时预建 agent」入口，默认空 = 全按需。
+  - 日志 ↔ 组合树的对应：落盘 `~/.dsh/sessions/` = `session-persistence-jsonl`（root: dshHomePath('sessions')）；兜底标题 seq 9 / LLM 标题 seq 12 = `session-title`（fallbackMaxWords:5）+ `session-title-llm`（maxOutputTokens:64）；seq 10 header.tools = `tools` + 一长串 `tool-*` 注册者。
+- 第 3 步（映射表对不上的行）：映射表与日志对齐；精读中纠正了第一段 journal 的 seq 错位（seq = 行号 − 2）。
+- 第 4 步（三问：猜测 → 核对结果）：三问均作答，见 [journal/2026-08-16-03-log-anchor-reading.md](../journal/2026-08-16-03-log-anchor-reading.md)。
+- 第 5 步（snapshot 是否绿灯）：Linux 下仅 1 个失败（与本次实验无关，暂忽略）；Windows 下大量失败，根因是 IDE 注入的 node-safe-delete-shim 拦截了测试收尾的临时目录批量删除（`SAFE_DELETE_BULK_CONFIRM_REQUIRED`），非断言/快照问题。
 
 ## 结论（执行后填写）
 
-- 假设是否成立：
+- 假设是否成立：成立。读懂一条完整 turn 的事件流，确实同时看到了组合层（不在日志里，由 --dump-config 回答）、spine、工具管线、LLM 缝、提示词装配的实物运转；「模型可见⟺logged」信条是贯穿全文的主线。
 - 由此产生的笔记（notes/ 链接）与开放问题（questions.zh.md）：
+  - 运行时日志落在 `~/.dsh/sessions/session.jsonl.zstd`，是 zstd 压缩的运行时形态；`session.expected.jsonl` 是归一化/占位符化、展开的可读形态。同一份日志的两种物理呈现，内容结构一致、值不同（占位符 ↔ 真实值）。
+  - journal 记录见 [journal/2026-08-16-03-log-anchor-reading.md](../journal/2026-08-16-03-log-anchor-reading.md)。
