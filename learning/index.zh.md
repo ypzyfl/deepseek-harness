@@ -27,7 +27,7 @@
 | 阶段 | 主题 | 状态 | 本区产出 |
 |---|---|---|---|
 | 0 | 日志锚点（入门第一步） | 完成 | [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)；[journal/2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) |
-| 1 | 仓库结构与无 key 启动 | 进行中 | 架构总览已完成，见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)；剩余：仓库地图 + 五术语 + web --dump-config |
+| 1 | 仓库结构与无 key 启动 | 进行中 | 架构总览已完成，见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)；组合层（profile/bundle/patch）见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)；剩余：仓库地图（README/AGENTS 三节/CLI README/development）+ web --dump-config |
 | 2 | Cordis 框架 | 未开始 | — |
 | 3 | 核心 spine 与回合流 | 未开始 | — |
 | 4 | 能力缝与 scope | 未开始 | — |

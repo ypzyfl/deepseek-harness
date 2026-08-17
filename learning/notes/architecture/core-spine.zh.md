@@ -39,6 +39,15 @@
 
 - `pnpm dsh --profile headless --dump-config`：组合树里能直接看到 core 各插件（`session`、`tools`、`system-prompt`、`agent`、`agent-default-model`、`agent-loop`）在场。
 
+## 重要辨析：core 插件「在场」≠「在日志里留名」
+
+core 插件是「机制」，日志事件是「机制运转时产生的行为」，两者不是一一对应：
+
+- 日志只记「发生了什么」（`turn/start`、`tool/call`…），不显式写「是谁做的」。
+- 大部分 core 插件在日志里「隐身」，只留下行为痕迹：`session` 产出 `user/message`/`assistant/message`；`agent-loop` 驱动 `turn/start`/`step/end`；`tools` 只在被调用时以 `tool/call` 出现。
+- 唯一显式署名的例外是 system-prompt：它写入的运行时上下文快照（seq 8）带 `source.plugin:"@deepseek-ai/dsh-system-prompt"`，因为「这条内容是谁注入的」必须让模型和读者可追溯。
+- 「谁做的」要回 `--dump-config` 组合树查「谁在场」，再与日志行为**匹配**推断，组合树不直接点名。
+
 ## spine 的分工（agent / agent-loop 的接口/实现分离）
 
 `agent` 和 `agent-loop` 是第 2 层「执行者」的核心，二者靠接口 `AgentFactory` 衔接，职责分离：

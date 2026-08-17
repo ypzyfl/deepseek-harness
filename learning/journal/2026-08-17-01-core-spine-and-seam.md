@@ -37,6 +37,17 @@
 - map.zh.md 更新：新增 core 三层、能力缝条目，清理过时的「未知」与断层
 - index.zh.md：阶段 1 标「进行中」，重点清单新增 agent 分工条目
 
+## 线三：组合层（architecture「组合层」小节 + profile/bundle/patch 源码查证）
+
+读 architecture.zh.md「Profile 与组合包」小节，并查证 profile.ts / app-boot README，补全组合层认知：
+
+1. **profile = 具名组装**（`$DSH_HOME/profiles/<name>`），**bundle = 可安装插件包**；profile 由若干 bundle 按序叠加。
+2. **四层层序**：空列表 → bundle（按 `dsh.profile.bundles` 顺序）→ profile 级 patch → home 级 patch → `--patch` overlay。
+3. **bundles 定义在 profile 的 package.json**（`dsh.profile.bundles` 字段），`PROFILE_TEMPLATES` 硬编码了 web/headless 的默认 bundle 列表。
+4. **home 级 patch = `~/.dsh/cordis.patch.yml`，可选、不自动创建**（`loadOptionalPatches` 对缺失文件返回「无此层」）；profile 级 patch 才自动创建空 `[]`。这是我一开始「在 ~/.dsh 下没看到 cordis.patch.yml」的答案。
+
+落盘：新建 [notes/architecture/composition-layer.zh.md](../notes/architecture/composition-layer.zh.md)。
+
 ## 待办
 
 - 进入阶段 2（Cordis 精读）：cordis-primer.zh.md + cordis-tutorial 01–07。
