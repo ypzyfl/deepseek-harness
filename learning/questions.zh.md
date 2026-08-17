@@ -4,3 +4,4 @@
 
 | 问题 | 状态 | 答案摘要 | 出处 |
 |---|---|---|---|
+| 不变量断言（invariant）的具体实现代码如何「独立重建 + 比对」模型请求？ | open | — | [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md) 遗留问题；源码 `packages/core/agent-loop/src/invariant.ts` |

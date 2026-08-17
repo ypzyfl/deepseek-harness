@@ -4,9 +4,10 @@
 
 ## 提纲（已知 / 未知 / 猜测）
 
-- **组合层**：已知「谁在场」由 `--dump-config` 回答，patch/overlay 按 id 增改删；未知 patch 层的完整合并语义。
-- **spine（agent / agent-loop）**：已知 `AgentRegistry`（登记）与 `AgentFactory`（创建）接口/实现分离、`loop 可替换`；未知 `sessions`/`llm`/`tools`/`systemPrompt` 四个 inject 服务的提供者与职责。
-- **工具管线**：已知 `tool-*` 插件注册工具 → `tools` 聚合 → 投影进 request；未知 Service Definition / Provider / Consumer 三角色的具体落地。
+- **组合层**：已知「谁在场」由 `--dump-config` 回答，patch/overlay 按 id 增改删；未知 patch 层的完整合并语义（属 Cordis loader/include 机制）。
+- **spine（agent / agent-loop）**：已知 `AgentRegistry`（登记）与 `AgentFactory`（创建）接口/实现分离、`loop 可替换`、五个 inject 服务（`agents`/`sessions`/`llm`/`tools`/`systemPrompt`）的提供者与职责；见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)。
+- **工具管线**：已知 `tool-*` 插件注册工具 → `tools` 聚合 → 投影进 request。
+- **能力缝（seam）**：已知三角色（Def/Provider/Consumer）、为何含 Consumer、可替换四种机制、行为不匹配的两种安全哲学；见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)。
 - **LLM 缝**：已知流式 chunk（block-start→delta→block-end）与聚合 message 的关系；未知真实 provider 的流式实现。
 - **提示词装配**：已知「先 logged 后投影、投影会裁剪会重排」；未知投影实现代码（`deriveMessages()`/`assembleContextFor`）。
 - **横切机制**：已知「模型可见⟺logged」、turn/step 继续条件、append-only + seq 引用 + `sourceEventSeqs` 三板斧。
@@ -27,26 +28,11 @@ flowchart LR
     B -.patch/overlay 按 id 增改删.-> F[默认值 vs 覆盖]
 ```
 
-### spine（agent / agent-loop）
+### packages/core 三层架构（产品主干）
 
-「登记」和「创建」分离，靠接口 `AgentFactory` 衔接：
+`packages/core` 是「产品 API 主干」，7 个包分三层：地基库（`scope`）→ 注册表（`session`/`tools`/`system-prompt`）→ 执行者（`agent`/`agent-default-model`/`agent-loop`）。Cordis 是 vendored 进 `vendor/` 的底层框架，core 每个包都是用 Cordis 写的插件。
 
-```mermaid
-flowchart TB
-    subgraph dsh-agent
-        R[AgentRegistry<br/>服务名 agents<br/>登记活体 agent]
-        F[AgentFactory 接口<br/>create / resume]
-    end
-    subgraph dsh-agent-loop
-        L[AgentLoop<br/>implements AgentFactory<br/>工厂 + 引擎]
-    end
-    R -->|setFactory| L
-    L -->|注册自己| R
-```
-
-- `inject:['agents']` 的 `agents` 是**服务**（`ctx.agents`，类型 `AgentRegistry`），由 `dsh-agent` 提供；`config.agents:[]` 是**配置数组**（启动时预置几个 agent）。同名不同物。
-- `agent-loop` 是 `AgentFactory` 的**默认实现**，不是代码写死唯一——任何实现该接口的插件都可在组合树替换它，这是「loop 可替换」的根源。
-- turn/step 由 loop 驱动：输入唤醒 loop（拉模型），loop 开 turn、认领 inbox、逐 step 循环，直到模型 `finish.reason=stop`。
+详细知识（含 spine 的接口/实现分离、两个 agents 辨析）见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)。
 
 ### 工具管线
 
@@ -68,6 +54,6 @@ flowchart TB
 
 ## 已知的断层（下次要补）
 
-- `sessions`/`llm`/`tools`/`systemPrompt` 四个 inject 服务的提供者与职责（只问了 `agents`）。
 - 投影的实现代码（`deriveMessages()` / `assembleContextFor`）未读，只知道行为。
-- 能力缝三角色（Service Definition / Provider / Consumer）仍是名词，未落地到具体包（shell 家族）。
+- 不变量断言的实现代码（`agent-loop/src/invariant.ts`）未读，只知道「独立重建 + 比对」的行为。
+- patch 层的完整合并语义（属 Cordis loader/include 机制）未读，需阶段 2 补。
