@@ -4,7 +4,7 @@
 
 ## 提纲（已知 / 未知 / 猜测）
 
-- **组合层**：已知「谁在场」由 `--dump-config` 回答；profile/bundle 含义、四层层序、patch 按 id 整行替换/insert；见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)。
+- **组合层**：已知「谁在场」由 `--dump-config` 回答；profile/bundle 含义、五层层序（bundle×2 → profile patch → home patch → --patch）、patch 按 id 整行替换/insert、bundle 自挂载；见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)。
 - **spine（agent / agent-loop）**：已知 `AgentRegistry`（登记）与 `AgentFactory`（创建）接口/实现分离、`loop 可替换`、五个 inject 服务（`agents`/`sessions`/`llm`/`tools`/`systemPrompt`）的提供者与职责；见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)。
 - **工具管线**：已知 `tool-*` 插件注册工具 → `tools` 聚合 → 投影进 request。
 - **能力缝（seam）**：已知三角色（Def/Provider/Consumer）、为何含 Consumer、可替换四种机制、行为不匹配的两种安全哲学；见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)。
@@ -59,4 +59,4 @@ flowchart LR
 
 - 投影的实现代码（`deriveMessages()` / `assembleContextFor`）未读，只知道行为。
 - 不变量断言的实现代码（`agent-loop/src/invariant.ts`）未读，只知道「独立重建 + 比对」的行为。
-- patch 层的完整合并语义（属 Cordis loader/include 机制）未读，需阶段 2 补。
+- patch 的「insert 新条目后、后续 patch 能否再对 inserted 条目 patch」这个边界语义（`applyEntryPatches` 的 inserted-row 索引修复）未读，需读 Cordis include 源码。

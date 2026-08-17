@@ -60,22 +60,33 @@
 
 ### 关系说明（按图自上而下）
 
-- **① profile 只「点名」bundle**：profile 的 `package.json` 里 `dsh.profile.bundles` 是一个有序的 bundle 包名列表，本身不包含任何插件；它只决定「用哪几个 bundle、按什么顺序叠加」。
-- **② bundle 的本体是「插件代码」**：一个 bundle 就是普通的 npm 包（如 `@deepseek-ai/dsh-headless`），它的 `lib/` 里有真正运行的插件模块（`startup.js`、`index.js` 等）。**这些插件代码才是「最终被挂上树、真正干活」的东西。**
+- **① profile 用于组合 bundle（只「点名」，不包含插件）**：profile 的职责就是把若干 bundle 组合成一套方案。它的 `package.json` 里 `dsh.profile.bundles` 是一个有序的 bundle 包名列表，本身不包含任何插件；它只决定「用哪几个 bundle、按什么顺序叠加」。
+- **② bundle 就是一个 node package**：bundle 是标准的 npm 包，有 `name`/`version`/`main`/`exports`/`dependencies` 等所有 node package 都有的字段。它唯一特殊之处，是 `package.json` 里多了 `"dsh": { "bundle": { "patch": ... } }` 这个声明——正是这个字段把它「标记」成 bundle。它的 `lib/` 里有真正运行的插件模块（`startup.js`、`index.js` 等），**这些插件代码才是「最终被挂上树、真正干活」的东西。**
 - **③ patch 清单是「怎么挂本体」的说明书**：bundle 的 `cordis.patch.yml` 里每一行 `- id: xxx / name: '...'` 都是「把 bundle 本体里的某个插件模块，以这个 id、这个 config 挂上树」。`name` 里的 specifier（如 `@deepseek-ai/dsh-headless/startup`）指向的就是本体代码。
 
   > **关键辨析：本体 vs patch = 内容 vs 通道**。bundle 的本体代码**不会自动上树**——它必须先被写进 bundle 自己的 `cordis.patch.yml` 清单里，组合器才会去挂它。**patch 清单是「本体上树的唯一通道」**，两者不是并列的两种贡献来源，而是「本体是内容、patch 是挂载指令」。所以 bundle 必须有 `"dsh": { "bundle": { "patch": ... } }` 声明——没有它，bundle 的代码永远上不了树（`profile.ts` 对缺失该声明的 bundle 明确报错）。
 
 - **④ patch 的两种操作**：在 patch 清单里，「新增」用 `insert:` 挂新条目（新插件），「替换」用 `id: 已有条目 / config: 新值` 覆盖已存在条目的 config。`dsh-headless` 的清单里两者并存：`id: system-prompt` 是**替换**（覆盖 dsh-base 已挂的 persona），`insert: - id: headless-runner` 是**新增**（挂自己的代码）。
-- **⑤ patch 层层覆盖**：bundle 层之后，依次叠加 profile 级 patch、home 级 patch、`--patch` overlay；越靠后优先级越高，按 id 整行替换 config（或 insert 新增）。
+- **⑤ patch 层层覆盖**：所有层本质上都是「一份 patch 列表」，只是提供者不同。顺序是：
+
+  ```
+  空列表
+    → bundle 1（如 dsh-base）        ← 实际 = 应用 dsh-base 的 cordis.patch.yml
+    → bundle 2（如 dsh-headless）    ← 实际 = 应用 dsh-headless 的 cordis.patch.yml
+    → profile 的 cordis.patch.yml     ← 用户对这套 profile 的定制
+    → home 级的 cordis.patch.yml      ← 用户全局定制（~/.dsh/cordis.patch.yml）
+    → --patch overlay                 ← 命令行临时覆盖
+  ```
+
+  越靠后优先级越高，按 id 整行替换 config（或 insert 新增）。**「bundle 层」就是「bundle 的 cordis.patch.yml」**——所谓「应用 bundle 1」就是「应用 dsh-base 的 patch 清单」。更本质地说：**bundle 是自己把自己挂载上树的**——它的 patch 清单里 `name` 指向自己的插件代码，组合器读它的清单时，就把它的代码挂上去。其余层（profile/home/--patch）则是「用户对已挂载条目的覆盖」，自己不挂代码，只改/增条目。
 - **一句话**：profile 点名 bundle → bundle 的 patch 清单把自己的插件代码挂上树 → 后续 patch 按 id 覆盖 → 得到插件树。
 
 ## 关键实体
 
 - **profile**：`$DSH_HOME/profiles/<name>` 目录，含 `package.json`（`dsh.profile.bundles` 有序列表）+ `cordis.patch.yml`（用户自己的 patch 层）+ `node_modules/`。
 - **bundle**：npm 包，manifest 声明 `"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`。`dsh-base` 是第一层（模型/工具/持久化/沙箱/设置/凭据/遥测），`dsh-web-app`/`dsh-headless` 叠加其上。
-- **patch 层**（按应用顺序，后者覆盖前者）：
-  1. bundle 层（按 `dsh.profile.bundles` 顺序）
+- **patch 层**（按应用顺序，后者覆盖前者；每一层都是一份 patch 列表，只是提供者不同）：
+  1. bundle 层 = 各 bundle 自己的 `cordis.patch.yml`（按 `dsh.profile.bundles` 顺序）
   2. profile 级 patch：`~/.dsh/profiles/<name>/cordis.patch.yml`（自动创建空 `[]`）
   3. home 级 patch：`~/.dsh/cordis.patch.yml`（**可选，不自动创建**，优先级高于 profile 级）
   4. `--patch` overlay
