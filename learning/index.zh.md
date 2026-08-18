@@ -19,6 +19,7 @@
 - [2026-08-16-01-cli-profile-alias.md](journal/2026-08-16-01-cli-profile-alias.md) — CLI profile 别名与参数归属
 - [2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) — 从组合树到 loop 引擎
 - [2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) — 日志精读：概念澄清 + seq 0–31 全三段 + 实验三问
+- [2026-08-17-01-core-spine-and-seam.md](journal/2026-08-17-01-core-spine-and-seam.md) — core 主干 + seam 可替换性 + 组合层（三条认知主线）
 
 ## 进度看板
 
@@ -43,3 +44,18 @@
 |---|---|---|---|
 | agent-loop（含 headless-runner） | 回合引擎是 harness 最底层、最稳定的核心；runner 是其 one-shot 外壳，二者关系是理解"loop 可替换、能力外挂"的钥匙 | 待深入 | [journal/2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) |
 | agent / agent-loop 的分工（接口与实现分离） | `dsh-agent` 定义 `AgentFactory` 接口 + `AgentRegistry`（登记活体 agent 的仓库）；`dsh-agent-loop` 是接口的默认实现（工厂 + 引擎）。「登记」与「创建」分离，接口/实现分离是「loop 可替换」的根源。另：`inject:['agents']` 的 `agents` 是服务（`ctx.agents`），与 `config.agents:[]` 的配置数组同名不同物 | 待深入 | [journal/2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) |
+
+## 常用命令备忘
+
+只记「跑什么命令看什么」，不存输出全文（组合树/日志是现场生成的、随版本漂移，存全文会过时）。
+
+| 想查什么 | 命令 |
+|---|---|
+| 某 profile 实际装配了哪些插件（组合树，含用户 patch） | `pnpm dsh --profile <name> --dump-config` |
+| 某 profile 的纯默认配置（不含用户 patch） | `pnpm dsh --profile <name> --dump-default-config` |
+| 运行时真实落盘的会话日志 | 读 `~/.dsh/sessions/session.jsonl.zstd`（zstd 压缩，`zstd -dc` 解压） |
+| 快照测试期望日志（可读、占位符化） | `examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl` |
+
+可用的 `<name>`：随发行版交付 `web`、`headless` 两个模板（`PROFILE_TEMPLATES` 硬编码）；其他任意名字需先 `pnpm dsh plugin --profile <name> add <package>` 创建。
+
+组合层规则（层序、patch 语义、bundle 自挂载）见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)。
