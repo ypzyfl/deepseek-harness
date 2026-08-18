@@ -24,6 +24,7 @@
 - [2026-08-18-01-cordis-dispatch-modes.md](journal/2026-08-18-01-cordis-dispatch-modes.md) — Cordis 分发模式：两个误解的修正（「是否 await」列名误导）
 - [2026-08-18-02-cordis-loader-js-tag.md](journal/2026-08-18-02-cordis-loader-js-tag.md) — Cordis Loader 配置：`!!js` 的澄清（静态结构 + 动态参数分界）
 - [2026-08-18-03-cordis-practice-rules.md](journal/2026-08-18-03-cordis-practice-rules.md) — Cordis 实践规则：两条插件编写纪律（装在哪 / 怎么卸）
+- [2026-08-18-04-runtime-vs-type-resolution.md](journal/2026-08-18-04-runtime-vs-type-resolution.md) — 运行时解析 vs 类型解析：hello.ts 报错但能跑（两套模块解析路径）
 
 ## 进度看板
 
@@ -33,7 +34,7 @@
 |---|---|---|---|
 | 0 | 日志锚点（入门第一步） | 完成 | [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)；[journal/2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) |
 | 1 | 仓库结构与无 key 启动 | 完成 | 架构总览见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)；组合层（profile/bundle/patch）见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)；五术语（seam/scope/turn/step/round）；web --dump-config |
-| 2 | Cordis 框架 | 进行中 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；primer 精读 journal 三篇（分发模式 / `!!js` / 实践规则） |
+| 2 | Cordis 框架 | 进行中 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；机制细节见 [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](notes/mechanisms/cordis-plugin-service-mechanics.zh.md)；journal 四篇（分发模式 / `!!js` / 实践规则 / 运行时vs类型解析） |
 | 3 | 核心 spine 与回合流 | 未开始 | — |
 | 4 | 能力缝与 scope | 未开始 | — |
 | 5 | 扩展实践 | 未开始 | — |

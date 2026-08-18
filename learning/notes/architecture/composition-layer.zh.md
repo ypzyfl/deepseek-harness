@@ -66,6 +66,10 @@
 
   > **关键辨析：本体 vs patch = 内容 vs 通道**。bundle 的本体代码**不会自动上树**——它必须先被写进 bundle 自己的 `cordis.patch.yml` 清单里，组合器才会去挂它。**patch 清单是「本体上树的唯一通道」**，两者不是并列的两种贡献来源，而是「本体是内容、patch 是挂载指令」。所以 bundle 必须有 `"dsh": { "bundle": { "patch": ... } }` 声明——没有它，bundle 的代码永远上不了树（`profile.ts` 对缺失该声明的 bundle 明确报错）。
 
+  > **`cordis.yml` vs `cordis.patch.yml` 的语义区分**：两者是**同一格式**（Cordis 配置条目列表，每项 `name` + `config`），区别只在**用途语义**——`cordis.yml` 是「完整配置」，这份列表就是全部、从零装配（教程 `bin.js` 读的就是它）；`cordis.patch.yml` 是「一层补丁」，对已有配置做增删改（insert / 按 id 覆盖 config）。组合层里**全是 `cordis.patch.yml`**，没有 `cordis.yml`——因为 bundle 的定位是「可叠加的一层能力」而非「完整应用」，被叠加的起点本身是一个空 profile 根，不需要一份 `cordis.yml` 充当完整配置。
+
+  > **dsh 组合模型里不存在「完整配置的 cordis.yml」**：bundle（`dsh-base`/`dsh-web-app`/`dsh-headless`）的实体是各自的 `cordis.patch.yml`；profile 也只有 `package.json`（`dsh.profile.bundles` 点名 bundle）+ 一份 `cordis.patch.yml`（用户定制层）+ `pnpm-workspace.yaml`，**没有 `cordis.yml`**（`profile.ts` 的 `initProfile` 只创建这三样，`PROFILE_PATCH_FILENAME` 硬编码为 `cordis.patch.yml`）。整个装配是「空列表 + 层层 patch 叠加」（`composeEntries` 调 `applyEntryPatches([], ...)`，起点是空列表），不存在一份充当「完整配置根」的 `cordis.yml`；`cordis.yml` 只出现在「它本身就是全部」的独立场景（如教程 `bin.js`）。
+
 - **④ patch 的两种操作**：在 patch 清单里，「新增」用 `insert:` 挂新条目（新插件），「替换」用 `id: 已有条目 / config: 新值` 覆盖已存在条目的 config。`dsh-headless` 的清单里两者并存：`id: system-prompt` 是**替换**（覆盖 dsh-base 已挂的 persona），`insert: - id: headless-runner` 是**新增**（挂自己的代码）。
 - **⑤ patch 层层覆盖**：所有层本质上都是「一份 patch 列表」，只是提供者不同。顺序是：
 

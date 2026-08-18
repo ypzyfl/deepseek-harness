@@ -25,19 +25,19 @@
 
 ## 第 2 步：cordis-tutorial 01–07 动手
 
-每章对应一个核心概念的动手验证，全部无 key 可跑。
+教程文档在 [docs/cordis-tutorial/](../../docs/cordis-tutorial/index.zh.md)，每章对应一个核心概念的动手验证，全部无 key 可跑。
 
 | 章 | 主题 | 对应过关点 | 状态 |
 |---|---|---|---|
-| 01 | 第一个插件（函数 + loader 挂载） | 动手起点 | [ ] |
-| 02 | 生命周期与 effect | 过关标准 ① 的 `ctx.effect()` | [ ] |
-| 03 | 服务（`ctx` 上公开能力 + `inject` 依赖） | 服务挂载机制 | [ ] |
-| 04 | 事件（类型化、广播、waterfall 短路） | 过关标准 ① 的 `ctx.on()` + ② waterfall | [ ] |
-| 05 | 配置（`cordis.yml` 校验） | 与阶段 1 组合层衔接 | [ ] |
-| 06 | 组合与 HMR（配置 = 插件树） | 与阶段 1 profile/bundle 衔接 | [ ] |
-| 07 | 进入 harness（注册真实工具） | 把教程接到本仓库 | [ ] |
+| [01](../../docs/cordis-tutorial/01-first-plugin.zh.md) | 第一个插件（函数 + loader 挂载） | 动手起点 | [x] |
+| [02](../../docs/cordis-tutorial/02-lifecycle-and-effects.zh.md) | 生命周期与 effect | 过关标准 ① 的 `ctx.effect()` | [x] |
+| [03](../../docs/cordis-tutorial/03-services.zh.md) | 服务（`ctx` 上公开能力 + `inject` 依赖） | 服务挂载机制 | [x] |
+| [04](../../docs/cordis-tutorial/04-events.zh.md) | 事件（类型化、广播、waterfall 短路） | 过关标准 ① 的 `ctx.on()` + ② waterfall | [ ] |
+| [05](../../docs/cordis-tutorial/05-config.zh.md) | 配置（`cordis.yml` 校验） | 与阶段 1 组合层衔接 | [ ] |
+| [06](../../docs/cordis-tutorial/06-composition-and-hmr.zh.md) | 组合与 HMR（配置 = 插件树） | 与阶段 1 profile/bundle 衔接 | [ ] |
+| [07](../../docs/cordis-tutorial/07-into-the-harness.zh.md) | 进入 harness（注册真实工具） | 把教程接到本仓库 | [ ] |
 
-环境准备（教程 index.zh.md「准备工作」节）：
+环境准备（教程 [index.zh.md](../../docs/cordis-tutorial/index.zh.md)「准备工作」节）：
 
 ```sh
 mkdir -p tmp/cordis-tutorial
@@ -56,8 +56,19 @@ node --import tsx ../../vendor/cordis/bin.js
 
 ## 已完成的落盘产出
 
-- [journal/2026-08-18-01-cordis-dispatch-modes.md](../journal/2026-08-18-01-cordis-dispatch-modes.md) — 分发模式两个误解的修正
-- [notes/architecture/plugin-service-seam.zh.md](../notes/architecture/plugin-service-seam.zh.md) — 插件 / Service / seam 的层级关系
+journal（4 篇）：
+
+- [2026-08-18-01-cordis-dispatch-modes.md](../journal/2026-08-18-01-cordis-dispatch-modes.md) — 分发模式两个误解的修正
+- [2026-08-18-02-cordis-loader-js-tag.md](../journal/2026-08-18-02-cordis-loader-js-tag.md) — `!!js` 的澄清
+- [2026-08-18-03-cordis-practice-rules.md](../journal/2026-08-18-03-cordis-practice-rules.md) — 实践规则两条纪律
+- [2026-08-18-04-runtime-vs-type-resolution.md](../journal/2026-08-18-04-runtime-vs-type-resolution.md) — 运行时 vs 类型解析
+
+notes（新增 2 篇 + 补 2 篇）：
+
+- [notes/architecture/plugin-service-seam.zh.md](../notes/architecture/plugin-service-seam.zh.md) — 插件 / Service / seam 层级关系（新增）
+- [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](../notes/mechanisms/cordis-plugin-service-mechanics.zh.md) — 插件/服务机制细节（新增）
+- [notes/architecture/composition-layer.zh.md](../notes/architecture/composition-layer.zh.md) — 补「cordis.yml vs cordis.patch.yml」辨析
+- [notes/architecture/core-spine.zh.md](../notes/architecture/core-spine.zh.md) — 补「两套分层不要混淆」辨析
 
 ## 过关检验自测（完成时逐条打勾）
 

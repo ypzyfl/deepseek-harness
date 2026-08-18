@@ -24,6 +24,16 @@
 | `agent-default-model` | 默认模型选择 | `ctx.agentDefaultModel` | 第 2 层 |
 | `agent-loop` | 默认具体 agent 驱动器 | `ctx.agentLoop` | 第 2 层 |
 
+## 两套「分层」不要混淆
+
+本笔记上表的「第 0/1/2 层」是 core **七包内部**的依赖分层（scope → 注册表 → 执行者），与 [learning-path.zh.md](../../learning-path.zh.md) 阶段 1 的「L0–L4 五层」是**两套不同的编号**：
+
+- **「L0–L4 五层」是 learning-path 的教学重组，不是正式术语**。`L0`（Cordis 地基）→ `L1`（核心脊柱 spine = core 七包）→ `L2`（能力缝）→ `L3`（组合层）→ `L4`（接口层）。这套编号**只出现在 learning-path.zh.md**，`docs/architecture.zh.md` 与 `packages/README.zh.md` 里没有 L 编号——它们的权威形态是自然语言描述 + 组表。learning-path 自己在「文档性质」声明里点明「架构总览一节是既有事实的鸟瞰重组，不新增事实」。
+- **本笔记的「第 0/1/2 层」是 core 组内部的细分**，对应关系：整个 core 七包 = 五层里的 **L1（spine）**；core 内部再分「scope（第 0 层库）→ 三个注册表（第 1 层）→ agent 三件套（第 2 层）」。
+- **L2 能力缝里的 Service 与 seam**：两者是「同一能力的两种视角」——Service 是它「挂在 ctx 上的形态」（可 inject），seam 是它「可替换的三角色结构」。L2 的每个能力既是 Service 又是 seam；而 L1 的 spine 是 Service 但**不是** seam（不可替换）。
+
+所以读到「第 0 层」别误当成「L0」：L0 指 Cordis 框架，而 scope 是 L1（spine）内部最底层的库。
+
 ## 与相邻单元的关系（依赖谁 / 被谁依赖）
 
 - **依赖 Cordis**：每个包都是 Cordis 插件，通过 `ctx.effect()`/`ctx.on()` 贡献服务、类型化事件、可逆副作用。
