@@ -23,6 +23,7 @@
 |---|---|---|
 | [index.zh.md](index.zh.md) | 本区文件入口索引与进度看板 | 固定名 |
 | [learning-path.zh.md](learning-path.zh.md) | 学习路线：读什么、按什么顺序（独立文档，与本页互相链接、互不重复） | 固定名 |
+| `plan/` | 各阶段的执行路线与逐步勾选进度（把 learning-path 某阶段拆成可推进的小步骤） | `stage-N.zh.md`（`N` 为阶段号）；只拆解、不复述 learning-path，冲突以 learning-path 为准 |
 | `experiments/` | 动手实验：假设 → 操作 → 观察 → 结论，会被笔记引用 | `NNN-slug.zh.md` 编号前缀，日期写在文内；编号一旦被引用不再改动，重做实验新开编号 |
 | `journal/` | 认知事件（卡点、突破、误解被修正）的原始记录 | `YYYY-MM-DD-NN-slug.zh.md` 日期 + 序号前缀（`NN` 为当天序号，从 01 递增，表达同一天内的先后）；只在事件发生时写，无事不写 |
 | `journal/topics/` | 主题聚合索引：把一个理解主题的历次 journal 会话串起来 | `slug.zh.md`；**只链不写**，见下方"journal 两级组织" |

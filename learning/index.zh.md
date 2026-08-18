@@ -7,6 +7,7 @@
 | 位置 | 内容 |
 |---|---|
 | [learning-path.zh.md](learning-path.zh.md) | 学习路线：读什么、按什么顺序（七阶段） |
+| `plan/` | 各阶段执行路线与逐步勾选进度，见 [plan/stage-2.zh.md](plan/stage-2.zh.md) |
 | [method.zh.md](method.zh.md) | 学习方法：宪法、目录规则、记录方式（journal 两级 / questions 三态 / map 两级）、笔记模板 |
 | [questions.zh.md](questions.zh.md) | 开放问题池（三态流转） |
 | `experiments/` | 动手实验，见 [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md) |
@@ -20,6 +21,9 @@
 - [2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) — 从组合树到 loop 引擎
 - [2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) — 日志精读：概念澄清 + seq 0–31 全三段 + 实验三问
 - [2026-08-17-01-core-spine-and-seam.md](journal/2026-08-17-01-core-spine-and-seam.md) — core 主干 + seam 可替换性 + 组合层（三条认知主线）
+- [2026-08-18-01-cordis-dispatch-modes.md](journal/2026-08-18-01-cordis-dispatch-modes.md) — Cordis 分发模式：两个误解的修正（「是否 await」列名误导）
+- [2026-08-18-02-cordis-loader-js-tag.md](journal/2026-08-18-02-cordis-loader-js-tag.md) — Cordis Loader 配置：`!!js` 的澄清（静态结构 + 动态参数分界）
+- [2026-08-18-03-cordis-practice-rules.md](journal/2026-08-18-03-cordis-practice-rules.md) — Cordis 实践规则：两条插件编写纪律（装在哪 / 怎么卸）
 
 ## 进度看板
 
@@ -29,7 +33,7 @@
 |---|---|---|---|
 | 0 | 日志锚点（入门第一步） | 完成 | [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)；[journal/2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) |
 | 1 | 仓库结构与无 key 启动 | 完成 | 架构总览见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)；组合层（profile/bundle/patch）见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)；五术语（seam/scope/turn/step/round）；web --dump-config |
-| 2 | Cordis 框架 | 未开始 | — |
+| 2 | Cordis 框架 | 进行中 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；primer 精读 journal 三篇（分发模式 / `!!js` / 实践规则） |
 | 3 | 核心 spine 与回合流 | 未开始 | — |
 | 4 | 能力缝与 scope | 未开始 | — |
 | 5 | 扩展实践 | 未开始 | — |
