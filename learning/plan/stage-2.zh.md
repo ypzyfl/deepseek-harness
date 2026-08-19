@@ -32,10 +32,10 @@
 | [01](../../docs/cordis-tutorial/01-first-plugin.zh.md) | 第一个插件（函数 + loader 挂载） | 动手起点 | [x] |
 | [02](../../docs/cordis-tutorial/02-lifecycle-and-effects.zh.md) | 生命周期与 effect | 过关标准 ① 的 `ctx.effect()` | [x] |
 | [03](../../docs/cordis-tutorial/03-services.zh.md) | 服务（`ctx` 上公开能力 + `inject` 依赖） | 服务挂载机制 | [x] |
-| [04](../../docs/cordis-tutorial/04-events.zh.md) | 事件（类型化、广播、waterfall 短路） | 过关标准 ① 的 `ctx.on()` + ② waterfall | [ ] |
-| [05](../../docs/cordis-tutorial/05-config.zh.md) | 配置（`cordis.yml` 校验） | 与阶段 1 组合层衔接 | [ ] |
-| [06](../../docs/cordis-tutorial/06-composition-and-hmr.zh.md) | 组合与 HMR（配置 = 插件树） | 与阶段 1 profile/bundle 衔接 | [ ] |
-| [07](../../docs/cordis-tutorial/07-into-the-harness.zh.md) | 进入 harness（注册真实工具） | 把教程接到本仓库 | [ ] |
+| [04](../../docs/cordis-tutorial/04-events.zh.md) | 事件（类型化、广播、waterfall 短路） | 过关标准 ① 的 `ctx.on()` + ② waterfall | [x] |
+| [05](../../docs/cordis-tutorial/05-config.zh.md) | 配置（`cordis.yml` 校验） | 与阶段 1 组合层衔接 | [x] |
+| [06](../../docs/cordis-tutorial/06-composition-and-hmr.zh.md) | 组合与 HMR（配置 = 插件树） | 与阶段 1 profile/bundle 衔接 | [x] |
+| [07](../../docs/cordis-tutorial/07-into-the-harness.zh.md) | 进入 harness（注册真实工具） | 把教程接到本仓库 | [x] |
 
 环境准备（教程 [index.zh.md](../../docs/cordis-tutorial/index.zh.md)「准备工作」节）：
 
@@ -49,8 +49,8 @@ node --import tsx ../../vendor/cordis/bin.js
 
 把教程 01 的第一个插件在本机跑起来；对照根 AGENTS.md「Registrations are effects」一行，确认自己能指出**哪一行代码产生了哪个可逆注册**。
 
-- [ ] 跑通教程 01 第一个插件
-- [ ] 定位「哪行代码 → 哪个可逆注册」（`ctx.effect()` / `ctx.on()` 各自的可逆性）
+- [x] 跑通教程 01 第一个插件
+- [x] 定位「哪行代码 → 哪个可逆注册」（`ctx.effect()` / `ctx.on()` 各自的可逆性）
 
 工具书（按需查，不精读）：[cordis-api/context.zh.md](../../docs/cordis-api/context.zh.md) 先读开头定位方式即可。
 
@@ -63,15 +63,17 @@ journal（4 篇）：
 - [2026-08-18-03-cordis-practice-rules.md](../journal/2026-08-18-03-cordis-practice-rules.md) — 实践规则两条纪律
 - [2026-08-18-04-runtime-vs-type-resolution.md](../journal/2026-08-18-04-runtime-vs-type-resolution.md) — 运行时 vs 类型解析
 
-notes（新增 2 篇 + 补 2 篇）：
+notes（新增 4 篇 + 补 2 篇）：
 
 - [notes/architecture/plugin-service-seam.zh.md](../notes/architecture/plugin-service-seam.zh.md) — 插件 / Service / seam 层级关系（新增）
 - [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](../notes/mechanisms/cordis-plugin-service-mechanics.zh.md) — 插件/服务机制细节（新增）
+- [notes/mechanisms/cordis-config-schema.zh.md](../notes/mechanisms/cordis-config-schema.zh.md) — 配置校验与默认值机制（新增）
+- [notes/mechanisms/cordis-pending-diagnosis.zh.md](../notes/mechanisms/cordis-pending-diagnosis.zh.md) — PENDING 诊断手册（新增）
 - [notes/architecture/composition-layer.zh.md](../notes/architecture/composition-layer.zh.md) — 补「cordis.yml vs cordis.patch.yml」辨析
 - [notes/architecture/core-spine.zh.md](../notes/architecture/core-spine.zh.md) — 补「两套分层不要混淆」辨析
 
 ## 过关检验自测（完成时逐条打勾）
 
-- [ ] ① 能指出 `ctx.effect()` / `ctx.on()` 各自产生的可逆注册
-- [ ] ② 能解释 waterfall 为何必须调用 `next()` 及短路后果
-- [ ] ③ 教程 01–07 练习全部跑通
+- [x] ① 能指出 `ctx.effect()` / `ctx.on()` 各自产生的可逆注册
+- [x] ② 能解释 waterfall 为何必须调用 `next()` 及短路后果
+- [x] ③ 教程 01–07 练习全部跑通

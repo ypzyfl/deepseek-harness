@@ -26,6 +26,10 @@
 - [2026-08-18-03-cordis-practice-rules.md](journal/2026-08-18-03-cordis-practice-rules.md) — Cordis 实践规则：两条插件编写纪律（装在哪 / 怎么卸）
 - [2026-08-18-04-runtime-vs-type-resolution.md](journal/2026-08-18-04-runtime-vs-type-resolution.md) — 运行时解析 vs 类型解析：hello.ts 报错但能跑（两套模块解析路径）
 
+### journal 主题聚合
+
+- [journal/topics/cordis-mechanics.zh.md](journal/topics/cordis-mechanics.zh.md) — Cordis 核心机制（串起 08-18 四篇：分发模式 / `!!js` / 实践规则 / 运行时vs类型解析）
+
 ## 进度看板
 
 阶段划分与过关标准以 [learning-path.zh.md](learning-path.zh.md) 为准，本表只登记执行状态与本区产出。状态取值：未开始 / 进行中 / 完成；完成一行时同步登记产出链接。"阶段 0"不属于 learning-path 的七阶段，是本区附加的入门实验（learning-path"读者与前置"一节指向它）。
@@ -34,7 +38,7 @@
 |---|---|---|---|
 | 0 | 日志锚点（入门第一步） | 完成 | [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)；[journal/2026-08-16-03-log-anchor-reading.md](journal/2026-08-16-03-log-anchor-reading.md) |
 | 1 | 仓库结构与无 key 启动 | 完成 | 架构总览见 [notes/architecture/core-spine.zh.md](notes/architecture/core-spine.zh.md)；组合层（profile/bundle/patch）见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)；五术语（seam/scope/turn/step/round）；web --dump-config |
-| 2 | Cordis 框架 | 进行中 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；机制细节见 [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](notes/mechanisms/cordis-plugin-service-mechanics.zh.md)；journal 四篇（分发模式 / `!!js` / 实践规则 / 运行时vs类型解析） |
+| 2 | Cordis 框架 | 完成 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；机制细节见 [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](notes/mechanisms/cordis-plugin-service-mechanics.zh.md)；配置校验见 [notes/mechanisms/cordis-config-schema.zh.md](notes/mechanisms/cordis-config-schema.zh.md)；PENDING 诊断手册见 [notes/mechanisms/cordis-pending-diagnosis.zh.md](notes/mechanisms/cordis-pending-diagnosis.zh.md)；journal 四篇（分发模式 / `!!js` / 实践规则 / 运行时vs类型解析） |
 | 3 | 核心 spine 与回合流 | 未开始 | — |
 | 4 | 能力缝与 scope | 未开始 | — |
 | 5 | 扩展实践 | 未开始 | — |
