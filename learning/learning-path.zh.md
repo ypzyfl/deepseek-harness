@@ -218,6 +218,8 @@ scope → session → system-prompt → tools → agent → agent-default-model 
 3. [subsystems/scope.zh.md](../docs/subsystems/scope.zh.md) — scope 原语参考页。
 4. [subsystems/shell.zh.md](../docs/subsystems/shell.zh.md) — 样板缝：以 shell 家族（`dsh-shell` 定义、`dsh-bash-local`/`dsh-bash-sandbox` 提供、`dsh-tool-bash` 消费）对照三角色。
 
+> LLM 缝在 rc.8 新增了图片（image）维度：`llm` 内容块新增 `image` 类型，DeepSeek 适配器新增 `maxRequestImageBytes` 与视觉模型 `inputModalities`。阶段 4 拆解 LLM 缝时，可把「文本之外的第二输入模态」当作 Provider 可替换性的一个对照素材。
+
 动手任务：在你阶段 1 打印的 `--dump-config` 组合树里，任选一条能力行，指出它背后的三个角色各由哪个包承担；再找一个"一个包兼任多角色"的反例并解释何时允许（线索在 glossary seam 词条与 [packages/README.zh.md](../packages/README.zh.md) Dependencies 一节）。
 
 过关检验：见完成标志表"阶段 4"行。
@@ -269,6 +271,7 @@ keyless 策略要点（每条的权威定义都在上面的链接里，此处仅
 - Web 双半：[subsystems/web-server.zh.md](../docs/subsystems/web-server.zh.md)（宿主半）与 [subsystems/client-modules.zh.md](../docs/subsystems/client-modules.zh.md)（浏览器半）。
 - 出进程面：`packages/sdk`、`packages/acp` 各组 README，以及 [python/README.zh.md](../python/README.zh.md)。
 - 自我修改与扩展运行时：[subsystems/extensions.zh.md](../docs/subsystems/extensions.zh.md)。
+- 多 agent 协作：[packages/experimental/agent-team](../packages/experimental/agent-team/README.zh.md) 与 `tool-agent-team`（实验能力，rc.8 引入，新增 `team/*` 会话事件）。
 
 ## 完成标志表
 
