@@ -62,7 +62,5 @@ flowchart LR
 
 ## 已知的断层（下次要补）
 
-- 投影的实现代码（`deriveMessages()` / `assembleContextFor`）未读，只知道行为。
-- 不变量断言的实现代码（`agent-loop/src/invariant.ts`）未读，只知道「独立重建 + 比对」的行为。
 - patch 的「insert 新条目后、后续 patch 能否再对 inserted 条目 patch」这个边界语义（`applyEntryPatches` 的 inserted-row 索引修复）未读，需读 Cordis include 源码。
 - `agent-loop` 取消收尾的实现（`BlockAssembler.interruptedBlocks()` + `agent.ts` 的 catch 分支，rc.8 新增）未读，只知道「补 `interrupted: true` 锚点」的行为；精读 agent-loop 时补。

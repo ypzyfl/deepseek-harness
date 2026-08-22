@@ -4,4 +4,10 @@
 
 | 问题 | 状态 | 答案摘要 | 出处 |
 |---|---|---|---|
-| 不变量断言（invariant）的具体实现代码如何「独立重建 + 比对」模型请求？ | open | — | [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md) 遗留问题；源码 `packages/core/agent-loop/src/invariant.ts` |
+| 不变量断言（invariant）的具体实现代码如何「独立重建 + 比对」模型请求？ | resolved | `invariant.ts` 第 39–42 行：独立再调 `deriveMessages()`，结果与 `options.messages` 做 `JSON.stringify` 比对，不等即 fail（`log-reconstruction desync`） | [notes/mechanisms/log.zh.md](notes/mechanisms/log.zh.md)「核心重点二」 |
+| `bindScopeParent` 的「键父链」与 Agent Note 的「agent 作用域平铺」是否指同一层？ | open | — | [notes/modules/scope.zh.md](notes/modules/scope.zh.md) 遗留问题 |
+| `replace` 操作（compaction）的具体触发链：`surfaceOp.replace` 由谁构造、`assertToolResultRewrite` 如何被 compaction seam 调用？ | open | — | [notes/modules/session.zh.md](notes/modules/session.zh.md) 遗留问题 |
+| `complete: true` 段的语义与 `system-prompt/assemble` waterfall 的交互细节？ | open | — | [notes/modules/system-prompt.zh.md](notes/modules/system-prompt.zh.md) 遗留问题 |
+| `ToolRuntime.restrict()` 的 allow/deny 掩码「快照」语义（注册时快照 vs 实时）？ | open | — | [notes/modules/system-prompt.zh.md](notes/modules/system-prompt.zh.md) 遗留问题 |
+| `withInitiator`/发起方作用域（`AsyncLocalStorage`）的进程内身份传递机制？ | open | — | [notes/modules/agent.zh.md](notes/modules/agent.zh.md) 遗留问题 |
+| `ReactLoopAgent` 的具体循环状态机（phase 流转、`kick()`/`turn()`/`step()` 调用链）？ | open | — | [notes/modules/agent-loop.zh.md](notes/modules/agent-loop.zh.md) 遗留问题 |

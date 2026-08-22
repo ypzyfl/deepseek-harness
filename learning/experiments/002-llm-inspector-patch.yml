@@ -1,0 +1,11 @@
+# 阶段 3 实验：挂载 dsh-experimental-llm-inspector 的 patch 层。
+#
+# 用法（源码启动，无需 build）：
+#   pnpm dsh --profile headless --patch learning/experiments/002-llm-inspector-patch.yml --dump-config
+#   pnpm dsh --profile headless --patch learning/experiments/002-llm-inspector-patch.yml "say hello"
+#
+# 第二个命令需要 DEEPSEEK_API_KEY 才会触发 llm/stream 并打印观察内容。
+# 本 patch 只追加观察器插件，不改变 headless profile 的既有组合。
+- insert:
+    - id: llm-inspector
+      name: '@deepseek-ai/dsh-experimental-llm-inspector'
