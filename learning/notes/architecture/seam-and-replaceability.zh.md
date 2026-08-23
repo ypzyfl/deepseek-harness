@@ -1,6 +1,6 @@
 # seam 与可替换性 学习笔记
 
-状态：草稿 | 已对照验证（2026-08-17 对照 docs/glossary.zh.md capability-seam 词条、learning-path.zh.md 阶段 4、agent-loop README 不变量节；2026-08-22 对照 tools/system-prompt README 补「可替换四机制」的机制 3 操作路径与「改代码 = 写插件」视角）
+状态：草稿 | 已对照验证（2026-08-17 对照 docs/glossary.zh.md capability-seam 词条、learning-path.zh.md 阶段 4、agent-loop README 不变量节；2026-08-22 对照 tools/system-prompt README 补「可替换四机制」的机制 3 操作路径与「改代码 = 写插件」视角；2026-08-23 补「完整与拆分是同一判据的两面」）
 
 ## 事实源（链接，不复述）
 
@@ -23,6 +23,15 @@ seam 是「可替换能力」：Service Definition（声明接口）+ 一个或�
 ## 为什么 seam 必须含 Consumer（而非只有 Def + Provider）
 
 因为「替换」不是「换一个 Provider」，而是「换一整套『能力如何被使用』的体验」。Consumer 是能力「面向模型的脸」（工具描述、参数、返回格式），Provider 是「干活的手」。只换手不换脸，模型会看到「手和脸不匹配」的怪能力。把三角色绑成一个整体，强制「换就整套换」，保证「通告面」与「可执行面」一致。
+
+### 「完整」与「拆分」是同一判据的两面（2026-08-23 补）
+
+seam 的「完整」有两层结构，不是一句口号：
+
+- **seam 是完整能力，不是接口**：Service Definition 绝不是 TS `interface`，而是「拥有自身 `ctx.<key>` 的 Cordis `Service`」。一个 seam 的存在证据是它在 `ctx` 上有可注入、可被 Consumer 消费的键（如 `ctx.shell`）。能注入 + 能消费 + 能替换，三者同时成立才叫完整能力。
+- **「三角色独立演化」是拆分的唯一判据**：拆包（Def/Provider/Consumer 分属不同包）和拆 seam（把完整能力拆成两个 seam）用的是同一条判据——只有当三角色各自会独立替换、独立升级时才拆，否则保持为一个 seam。根 AGENTS.md「complete, never one role; split only when roles evolve independently」里，「complete」和「split only when」是同一枚硬币的两面：默认不拆，拆的正当理由只有「演化独立性」。
+
+一句话版本：替换的单元是「整套使用体验」，不是「某个实现」。Consumer 是面向模型的脸，Provider 是干活的手；只换手不换脸，模型会看到「通告面」和「可执行面」对不上的畸形能力。把三角色绑成一个 seam，就是结构上强制「换就整套换」。
 
 ## 可替换的四种机制
 

@@ -51,9 +51,8 @@ journal 序号用当天递增的 `NN`（从 `01` 起）而非小时分钟：序�
 
 notes/ 内部按认知类型分桶，按需生长，不预铺空文件：
 
-- `architecture/` — 宏观理解：五层总览的自己的话重述与误解记录。
+- `architecture/` — 宏观理解：五层总览的自己的话重述与误解记录；能力缝的样板/结构/替换笔记也在此（如 `seam-structure.zh.md`）。
 - `mechanisms/` — 横切机制：model-visible⟺logged、turn/step 继续条件、waterfall `next()`、组合层装配序等跨层不变量。
-- `seams/` — 能力缝样板：以 shell 家族（Service Definition / Provider / Consumer 三角色）为第一样板。
 - `modules/` — 具体包：spine 七包优先，其余按工作触碰的领域生长。
 
 ## 记录方式：三层载体
