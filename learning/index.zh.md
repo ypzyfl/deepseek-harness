@@ -13,6 +13,7 @@
 | `experiments/` | 动手实验，见 [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)、[experiments/002-llm-inspector.zh.md](experiments/002-llm-inspector.zh.md)、[experiments/003-turn-trace.zh.md](experiments/003-turn-trace.zh.md)、[experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md) |
 | `journal/` | 认知事件原始记录（`YYYY-MM-DD-slug.zh.md`） |
 | `notes/` | 认知单元（每篇一个可独立复述的理解）：architecture / mechanisms / modules |
+| `guide/` | 指导性手册（长期反复照做的操作手册）：见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md) |
 | `map.zh.md` | 认知地图（整体心智模型快照，理解浮现后落笔） |
 
 ### journal 现有记录
@@ -30,6 +31,11 @@
 - [2026-08-23-01-stage4-seam-scope-structure.md](journal/2026-08-23-01-stage4-seam-scope-structure.md) — 阶段 4 第 2 步：从「记术语」升级到「记结构」（seam 完整性与 lineage 是数据不是结构）
 - [2026-08-23-02-stage4-shell-seam-reading.md](journal/2026-08-23-02-stage4-shell-seam-reading.md) — 阶段 4 第 3b 步：shell.zh.md 读不下去 → 抓住「Def 契约」主线
 - [2026-08-25-01-composition-layer-bundle-nature.md](journal/2026-08-25-01-composition-layer-bundle-nature.md) — 组合层深挖：bundle 从「普通包」到「少数特殊、本质是捆」的五次连续翻转（cordis.yml 根 vs 层 / bundle 挂别的包 / bundle 无层级 / 声明≠装配 / bundle 少数特殊）
+- [2026-08-26-01-out-of-tree-plugin-frontend-injection.md](journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md) — 仓外插件前端注入：Critic「必须 fork」→ Builder「可运行时挂载」的源码裁决（ClientModuleRegistry 运行时扫描而非构建期静态清单）
+- [2026-08-26-02-poc-build-tsdown-version-drift.md](journal/2026-08-26-02-poc-build-tsdown-version-drift.md) — PoC 构建打通：`^` 版本号制造「上游漂移」（tsdown 0.22.14 vs 0.22.2）+ 手写路线 A 契约实测
+- [2026-08-26-03-install-target-and-profile-isolation.md](journal/2026-08-26-03-install-target-and-profile-isolation.md) — install 落点裁决：`--patch` 管挂载不管解析；fork profile 撞上「模板按名字查」（PROFILE_TEMPLATES）+ DSH_HOME 沙箱备选
+- [2026-08-26-04-dsh-home-sandbox-three-questions-switch.md](journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md) — DSH_HOME 沙箱三问（持久性/debug/热更新）与落点切换：沙箱已实测搭建（add + dump-config 通过）
+- [2026-08-26-05-browser-debug-and-ide-tooling.md](journal/2026-08-26-05-browser-debug-and-ide-tooling.md) — 浏览器半断点收尾：Node 断点错位 + `.tsx` 导入报错（NodeNext）+ tasks.json cwd 三连坑（多根工作区）
 
 ### journal 主题聚合
 
@@ -46,7 +52,7 @@
 | 2 | Cordis 框架 | 完成 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；机制细节见 [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](notes/mechanisms/cordis-plugin-service-mechanics.zh.md)；配置校验见 [notes/mechanisms/cordis-config-schema.zh.md](notes/mechanisms/cordis-config-schema.zh.md)；PENDING 诊断手册见 [notes/mechanisms/cordis-pending-diagnosis.zh.md](notes/mechanisms/cordis-pending-diagnosis.zh.md)；journal 四篇（分发模式 / `!!js` / 实践规则 / 运行时vs类型解析） |
 | 3 | 核心 spine 与回合流 | 完成 | 执行路线见 [plan/stage-3.zh.md](plan/stage-3.zh.md)；七包笔记见 [notes/modules/](notes/modules/)（scope / session / system-prompt / tools / agent / agent-default-model / agent-loop）；横切机制「日志」见 [notes/mechanisms/log.zh.md](notes/mechanisms/log.zh.md)、「事件持久性」见 [notes/mechanisms/event-persistence.zh.md](notes/mechanisms/event-persistence.zh.md)；动手实验见 [experiments/002-llm-inspector.zh.md](experiments/002-llm-inspector.zh.md)、[experiments/003-turn-trace.zh.md](experiments/003-turn-trace.zh.md) |
 | 4 | 能力缝与 scope | 完成 | 执行路线见 [plan/stage-4.zh.md](plan/stage-4.zh.md)；缝全景目录（三堆分类 + 三角色表 + mode 判据）见 [notes/architecture/capability-seam-catalog.zh.md](notes/architecture/capability-seam-catalog.zh.md)；seam 通用结构（三角色对齐 + request/spec + 换 Provider/能力面扩展）见 [notes/architecture/seam-structure.zh.md](notes/architecture/seam-structure.zh.md)；可替换四机制扩充见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)；scope 两级扁平 + shadowing/restriction 见 [notes/modules/scope.zh.md](notes/modules/scope.zh.md)；lineage 是数据不是结构见 [notes/mechanisms/lineage-data-not-structure.zh.md](notes/mechanisms/lineage-data-not-structure.zh.md)；拆三角色动手见 [experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md)；读法辨析见 [journal/2026-08-22-02-stage4-seam-catalog-reading.md](journal/2026-08-22-02-stage4-seam-catalog-reading.md) 与 [journal/2026-08-23-01-stage4-seam-scope-structure.md](journal/2026-08-23-01-stage4-seam-scope-structure.md)、[journal/2026-08-23-02-stage4-shell-seam-reading.md](journal/2026-08-23-02-stage4-shell-seam-reading.md) |
-| 5 | 扩展实践 | 未开始 | 执行路线见 [plan/stage-5.zh.md](plan/stage-5.zh.md) |
+| 5 | 扩展实践 | 进行中 | 执行路线见 [plan/stage-5.zh.md](plan/stage-5.zh.md)；仓外插件方案调研（零污染/前端注入/debug/检查对齐）见 [notes/architecture/out-of-tree-plugin.zh.md](notes/architecture/out-of-tree-plugin.zh.md)；操作手册见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md)；认知翻转见 [journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md](journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md)、[journal/2026-08-26-02-poc-build-tsdown-version-drift.md](journal/2026-08-26-02-poc-build-tsdown-version-drift.md)、[journal/2026-08-26-03-install-target-and-profile-isolation.md](journal/2026-08-26-03-install-target-and-profile-isolation.md)、[journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md](journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md)、[journal/2026-08-26-05-browser-debug-and-ide-tooling.md](journal/2026-08-26-05-browser-debug-and-ide-tooling.md) |
 | 6 | 测试策略与 keyless | 未开始 | — |
 | 7 | 专项深入（按需） | 未开始 | — |
 
@@ -71,6 +77,6 @@
 | 运行时真实落盘的会话日志 | 读 `~/.dsh/sessions/session.jsonl.zstd`（zstd 压缩，`zstd -dc` 解压） |
 | 快照测试期望日志（可读、占位符化） | `examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl` |
 
-可用的 `<name>`：随发行版交付 `web`、`headless` 两个模板（`PROFILE_TEMPLATES` 硬编码）；其他任意名字需先 `pnpm dsh plugin --profile <name> add <package>` 创建。
+可用的 `<name>`：随发行版交付 `web`、`headless` 两个模板（`PROFILE_TEMPLATES` 按名字硬编码）；其他名字经 `pnpm dsh plugin --profile <name> add` 创建的是 DEFAULT profile（仅 `dsh-base`，无 web UI）——fork web 等价 profile 须手写三文件，见 [notes/architecture/out-of-tree-plugin.zh.md](notes/architecture/out-of-tree-plugin.zh.md)「install 落点与 profile 隔离」。
 
 组合层规则（层序、patch 语义、bundle 自挂载）见 [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md)。

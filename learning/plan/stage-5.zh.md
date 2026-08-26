@@ -74,17 +74,27 @@ learning-path 阶段 5 给出二选一：工具路径（`adding-a-tool`）或包
 
 journal：
 
-（待补）
+- [2026-08-26-01-out-of-tree-plugin-frontend-injection.md](../journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md) — 仓外插件前端注入的源码裁决（Critic「必须 fork」→ Builder「可运行时挂载」）
+- [2026-08-26-02-poc-build-tsdown-version-drift.md](../journal/2026-08-26-02-poc-build-tsdown-version-drift.md) — PoC 构建打通：`^` 版本号制造「上游漂移」+ 手写路线 A 契约实测
+- [2026-08-26-03-install-target-and-profile-isolation.md](../journal/2026-08-26-03-install-target-and-profile-isolation.md) — install 落点裁决与 profile 隔离方案（fork `web-poc` / DSH_HOME 沙箱）
+- [2026-08-26-04-dsh-home-sandbox-three-questions-switch.md](../journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md) — DSH_HOME 沙箱三问（持久性 / debug / 热更新）与落点切换到沙箱（已实测搭建）
+- [2026-08-26-05-browser-debug-and-ide-tooling.md](../journal/2026-08-26-05-browser-debug-and-ide-tooling.md) — 浏览器半断点收尾：Node 断点错位 + `.tsx` 导入报错（NodeNext）+ tasks.json cwd 三连坑
 
 notes：
 
-（待补）
+- [out-of-tree-plugin.zh.md](../notes/architecture/out-of-tree-plugin.zh.md) — 仓外插件开发机制（零污染 / 前端运行时注入 / 构建契约 / debug / 检查对齐）
+
+guide：
+
+- [custom-plugin.zh.md](../guide/custom-plugin.zh.md) — 仓外插件开发操作手册（可行性 + 整体方案 + 具体做法 + 踩坑清单）
 
 experiments：
 
 （待补；若动手实现是可复现的假设→操作→观察→结论，按 `NNN-slug.zh.md` 编号登记）
 
 ## 过关检验自测（完成时逐条打勾）
+
+> 说明：已走完的 PoC 验证（前端注入链路 / DSH_HOME 沙箱 / tsdown 契约 / 依赖版本锁定，见 [guide/custom-plugin.zh.md](../guide/custom-plugin.zh.md) 第 8 节）不构成过关标准③的 keyless snapshot——cookbook verify 步骤与 keyless snapshot 尚未走完，故本节保持未勾选。
 
 - [ ] ① 所选 cookbook 指南的全部 verify 步骤通过（工具路径 = 工具被调用并返回正确结果；包路径 = 五条门禁命令全绿）
 - [ ] ② 改动遵守「挂在已文档化扩展点」而非改 loop（能指认扩展点，未触碰 `agent-loop`）
