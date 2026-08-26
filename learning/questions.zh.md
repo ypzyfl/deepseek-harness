@@ -11,3 +11,4 @@
 | `ToolRuntime.restrict()` 的 allow/deny 掩码「快照」语义（注册时快照 vs 实时）？ | open | — | [notes/modules/system-prompt.zh.md](notes/modules/system-prompt.zh.md) 遗留问题 |
 | `withInitiator`/发起方作用域（`AsyncLocalStorage`）的进程内身份传递机制？ | open | — | [notes/modules/agent.zh.md](notes/modules/agent.zh.md) 遗留问题 |
 | `ReactLoopAgent` 的具体循环状态机（phase 流转、`kick()`/`turn()`/`step()` 调用链）？ | open | — | [notes/modules/agent-loop.zh.md](notes/modules/agent-loop.zh.md) 遗留问题 |
+| `dsh plugin add` 对本地路径 spec（`file:` / `link:` / 裸路径）的 link-vs-copy 语义差异？ | open | — | [notes/architecture/composition-layer.zh.md](notes/architecture/composition-layer.zh.md) 遗留问题；`plugin.ts` 的 `anchorPathSpec` |

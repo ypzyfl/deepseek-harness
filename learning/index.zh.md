@@ -7,7 +7,7 @@
 | 位置 | 内容 |
 |---|---|
 | [learning-path.zh.md](learning-path.zh.md) | 学习路线：读什么、按什么顺序（七阶段） |
-| `plan/` | 各阶段执行路线与逐步勾选进度，见 [plan/stage-2.zh.md](plan/stage-2.zh.md)、[plan/stage-3.zh.md](plan/stage-3.zh.md)、[plan/stage-4.zh.md](plan/stage-4.zh.md) |
+| `plan/` | 各阶段执行路线与逐步勾选进度，见 [plan/stage-2.zh.md](plan/stage-2.zh.md)、[plan/stage-3.zh.md](plan/stage-3.zh.md)、[plan/stage-4.zh.md](plan/stage-4.zh.md)、[plan/stage-5.zh.md](plan/stage-5.zh.md) |
 | [method.zh.md](method.zh.md) | 学习方法：宪法、目录规则、记录方式（journal 两级 / questions 三态 / map 两级）、笔记模板 |
 | [questions.zh.md](questions.zh.md) | 开放问题池（三态流转） |
 | `experiments/` | 动手实验，见 [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)、[experiments/002-llm-inspector.zh.md](experiments/002-llm-inspector.zh.md)、[experiments/003-turn-trace.zh.md](experiments/003-turn-trace.zh.md)、[experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md) |
@@ -29,6 +29,7 @@
 - [2026-08-22-02-stage4-seam-catalog-reading.md](journal/2026-08-22-02-stage4-seam-catalog-reading.md) — 阶段 4 开头：缝全景图读法 + 「mode 三列」的两次认知翻转（三列是手工标注 / bundle 判据是「替换发生在哪一层」）
 - [2026-08-23-01-stage4-seam-scope-structure.md](journal/2026-08-23-01-stage4-seam-scope-structure.md) — 阶段 4 第 2 步：从「记术语」升级到「记结构」（seam 完整性与 lineage 是数据不是结构）
 - [2026-08-23-02-stage4-shell-seam-reading.md](journal/2026-08-23-02-stage4-shell-seam-reading.md) — 阶段 4 第 3b 步：shell.zh.md 读不下去 → 抓住「Def 契约」主线
+- [2026-08-25-01-composition-layer-bundle-nature.md](journal/2026-08-25-01-composition-layer-bundle-nature.md) — 组合层深挖：bundle 从「普通包」到「少数特殊、本质是捆」的五次连续翻转（cordis.yml 根 vs 层 / bundle 挂别的包 / bundle 无层级 / 声明≠装配 / bundle 少数特殊）
 
 ### journal 主题聚合
 
@@ -45,7 +46,7 @@
 | 2 | Cordis 框架 | 完成 | 执行路线见 [plan/stage-2.zh.md](plan/stage-2.zh.md)；插件/Service/seam 关系见 [notes/architecture/plugin-service-seam.zh.md](notes/architecture/plugin-service-seam.zh.md)；机制细节见 [notes/mechanisms/cordis-plugin-service-mechanics.zh.md](notes/mechanisms/cordis-plugin-service-mechanics.zh.md)；配置校验见 [notes/mechanisms/cordis-config-schema.zh.md](notes/mechanisms/cordis-config-schema.zh.md)；PENDING 诊断手册见 [notes/mechanisms/cordis-pending-diagnosis.zh.md](notes/mechanisms/cordis-pending-diagnosis.zh.md)；journal 四篇（分发模式 / `!!js` / 实践规则 / 运行时vs类型解析） |
 | 3 | 核心 spine 与回合流 | 完成 | 执行路线见 [plan/stage-3.zh.md](plan/stage-3.zh.md)；七包笔记见 [notes/modules/](notes/modules/)（scope / session / system-prompt / tools / agent / agent-default-model / agent-loop）；横切机制「日志」见 [notes/mechanisms/log.zh.md](notes/mechanisms/log.zh.md)、「事件持久性」见 [notes/mechanisms/event-persistence.zh.md](notes/mechanisms/event-persistence.zh.md)；动手实验见 [experiments/002-llm-inspector.zh.md](experiments/002-llm-inspector.zh.md)、[experiments/003-turn-trace.zh.md](experiments/003-turn-trace.zh.md) |
 | 4 | 能力缝与 scope | 完成 | 执行路线见 [plan/stage-4.zh.md](plan/stage-4.zh.md)；缝全景目录（三堆分类 + 三角色表 + mode 判据）见 [notes/architecture/capability-seam-catalog.zh.md](notes/architecture/capability-seam-catalog.zh.md)；seam 通用结构（三角色对齐 + request/spec + 换 Provider/能力面扩展）见 [notes/architecture/seam-structure.zh.md](notes/architecture/seam-structure.zh.md)；可替换四机制扩充见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)；scope 两级扁平 + shadowing/restriction 见 [notes/modules/scope.zh.md](notes/modules/scope.zh.md)；lineage 是数据不是结构见 [notes/mechanisms/lineage-data-not-structure.zh.md](notes/mechanisms/lineage-data-not-structure.zh.md)；拆三角色动手见 [experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md)；读法辨析见 [journal/2026-08-22-02-stage4-seam-catalog-reading.md](journal/2026-08-22-02-stage4-seam-catalog-reading.md) 与 [journal/2026-08-23-01-stage4-seam-scope-structure.md](journal/2026-08-23-01-stage4-seam-scope-structure.md)、[journal/2026-08-23-02-stage4-shell-seam-reading.md](journal/2026-08-23-02-stage4-shell-seam-reading.md) |
-| 5 | 扩展实践 | 未开始 | — |
+| 5 | 扩展实践 | 未开始 | 执行路线见 [plan/stage-5.zh.md](plan/stage-5.zh.md) |
 | 6 | 测试策略与 keyless | 未开始 | — |
 | 7 | 专项深入（按需） | 未开始 | — |
 
