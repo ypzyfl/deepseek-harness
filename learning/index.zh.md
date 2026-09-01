@@ -36,10 +36,13 @@
 - [2026-08-26-03-install-target-and-profile-isolation.md](journal/2026-08-26-03-install-target-and-profile-isolation.md) — install 落点裁决：`--patch` 管挂载不管解析；fork profile 撞上「模板按名字查」（PROFILE_TEMPLATES）+ DSH_HOME 沙箱备选
 - [2026-08-26-04-dsh-home-sandbox-three-questions-switch.md](journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md) — DSH_HOME 沙箱三问（持久性/debug/热更新）与落点切换：沙箱已实测搭建（add + dump-config 通过）
 - [2026-08-26-05-browser-debug-and-ide-tooling.md](journal/2026-08-26-05-browser-debug-and-ide-tooling.md) — 浏览器半断点收尾：Node 断点错位 + `.tsx` 导入报错（NodeNext）+ tasks.json cwd 三连坑（多根工作区）
+- [2026-09-01-01-session-projection-fold-vs-log-organization.md](journal/2026-09-01-01-session-projection-fold-vs-log-organization.md) — 会话投影「折叠」≠「组织日志」：方向先反了（账本算余额；turn 边界是算出来的派生状态）
+- [2026-09-01-02-request-header-series-not-batching.md](journal/2026-09-01-02-request-header-series-not-batching.md) — request/header 的 series：不是批处理，是「分段标记」（以存储换精确重建）
 
 ### journal 主题聚合
 
 - [journal/topics/cordis-mechanics.zh.md](journal/topics/cordis-mechanics.zh.md) — Cordis 核心机制（串起 08-18 四篇：分发模式 / `!!js` / 实践规则 / 运行时vs类型解析）
+- [journal/topics/projection.zh.md](journal/topics/projection.zh.md) — 投影（日志派生状态）（串起日志三层模型 → 三套投影 → series 分段三篇）
 
 ## 进度看板
 

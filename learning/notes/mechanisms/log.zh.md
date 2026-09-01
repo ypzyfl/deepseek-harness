@@ -109,6 +109,31 @@ surface 存在的**唯一目的**，是支撑「从日志重建模型历史」�
 
 所以「模型可见 ⟺ logged」由**两套投影共同满足**：消息历史走 surface 这套，系统提示词/工具/配置走 `request/header` 这套。这也是为什么系统提示词「不进 surface 但进日志」——它属于第二套，不属于第一套。
 
+### request/header 的 series 语义（0.1.2-alpha.2 增量）
+
+`request/header` 的 `reason` 从 3 值扩为 4 值，新增「model-message series」分段语义（判定在 `agent-loop/src/agent.ts` 的 `buildRequest`）：
+
+| reason | 触发条件 |
+|---|---|
+| `initial` | 首次请求，无 baseline header |
+| `resume` | 首次 append 但已有 baseline（恢复会话） |
+| `change` | header 内容变了（config/system/tools 任一变化） |
+| `series` | header 没变，但 surface 的 `replaceGeneration` 变了（消息历史被替换，如 compaction） |
+
+`startsSeries: true` 是「header 变化**同时**开启新 series」的标记。agent-loop 用 `requestSurfaceGeneration` 记录上一次请求时的 surface `replaceGeneration`，一旦 surface 被替换（`replaceGeneration` 递增），即使信封没变也 append `reason:'series'`——因为「发给模型的消息序列」已经换了一拨。
+
+> 一句话：`request/header` 不只是「请求信封变化的记录」，还承载「模型消息序列分段」的语义；`surface.replaceGeneration` 是「消息历史被替换」的计数器。
+
+**`replaceGeneration` 的触发链路**（谁让这个计数器递增，2026-09-01 追通）：
+
+1. **递增点**：`surface.ts` 的 `applySurfacePlan`——事件带 `surfaceOp: { op: 'replace', start, end }` 时，`nodes.splice(...)` 用新节点替换 surface 的 start..end 段，并 `replaceGeneration += 1`。这是「投影视图上的位置替换」，不是日志替换（日志 append-only 不变）。
+2. **生产者（compaction 生态）**：`compaction-basic` 的 `commitCompactionBody` 用摘要 checkpoint 替换历史（`append('user/message', checkpoint, { surfaceOp: { op: 'replace', start, end }, sourceEventSeqs })`）；`compaction-tool-result-pruner` 的 `pruneSession` 用修剪版替换超预算 tool/result（单节点 replace）。`sourceEventSeqs` 必须包含所有被遮蔽节点（provenance 证明，缺失即 fail）。
+3. **闭环**：compaction 压力超限 → 生成摘要 → append 带 replace 的 checkpoint → surface `replaceGeneration` 递增 → 下一个 step 的 `buildRequest` 发现 generation 变了 → `append('request/header', { reason: 'series' })`。
+
+### 第三套投影：sessionProjections（0.1.2-alpha.2 增量）
+
+「模型可见 ⟺ logged」由上面两套重建投影满足；此外还有**第三套** `ctx.sessionProjections`（会话投影注册表），它**不**服务「模型可见」，而是折叠「客户端/宿主可见的派生状态」（todo 清单、goal 快照、turn 边界）。三者都「从日志派生」，但目的正交——详见 [session-projection.zh.md](session-projection.zh.md)。
+
 ## 核心重点三：surface 筛哪三类消息，为什么是这三类
 
 surface 只筛三类事件（源码硬编码，`surface.ts` 第 15–19 行）：
@@ -176,4 +201,4 @@ const SURFACE_EVENT_TYPES = new Set(['user/message', 'assistant/message', 'tool/
 
 ## 遗留问题（登记进 questions.zh.md）
 
-- `replace` 操作（compaction）如何触发 surface 遮蔽、`assertToolResultRewrite` 的「只改 content」不变式——见 [notes/modules/session.zh.md](../modules/session.zh.md) 遗留问题。
+- ~~`replace` 操作（compaction）如何触发 surface 遮蔽、`assertToolResultRewrite` 的「只改 content」不变式~~ **已解答**（2026-09-01）：见上方「request/header 的 series 语义」的「replaceGeneration 触发链路」——compaction 生态构造 replace，`assertToolResultRewrite` 校验 tool/result 替换只改 content。

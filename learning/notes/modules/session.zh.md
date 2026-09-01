@@ -48,4 +48,4 @@
 
 ## 遗留问题（登记进 questions.zh.md）
 
-- `replace` 操作（compaction）的具体触发链：`surfaceOp: { op: 'replace', start, end }` 由谁构造、`assertToolResultRewrite` 的「只改 content」不变式如何被 compaction seam 调用——待读 compaction 包时验证。
+- ~~`replace` 操作（compaction）的具体触发链：`surfaceOp: { op: 'replace', start, end }` 由谁构造、`assertToolResultRewrite` 的「只改 content」不变式如何被 compaction seam 调用~~ **已解答**（2026-09-01）：compaction 生态构造（`compaction-basic` 摘要替换 + `compaction-tool-result-pruner` 工具结果修剪），`assertToolResultRewrite` 校验 tool/result 替换只改 content。链路见 [notes/mechanisms/log.zh.md](../mechanisms/log.zh.md)「request/header 的 series 语义」。

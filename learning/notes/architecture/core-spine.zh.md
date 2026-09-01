@@ -83,5 +83,5 @@ flowchart TB
 
 ## 遗留问题（登记进 questions.zh.md）
 
-- ~~目录里有 `agent-tool-presentation` 包，但 core README 表格未列——是遗漏、还是属于别的组？~~ **已查清**：`agent-tool-presentation` 是 preset 的「工具呈现方式」声明插件（`native`/`code`/`both`，调 `ctx.tools.presentAs()`），语义上挂在 preset 生态，不属于默认控制主干的 7 个包，故 core README 表格未列是文档有意安排，非遗漏。
+- ~~目录里有 `agent-tool-presentation` 包，但 core README 表格未列——是遗漏、还是属于别的组？~~ **已查清**：`agent-tool-presentation` 是 preset 的「工具呈现方式」声明插件（`native`/`ptc`/`both`，调 `ctx.tools.presentAs()`），语义上挂在 preset 生态，不属于默认控制主干的 7 个包，故 core README 表格未列是文档有意安排，非遗漏。
 - `scope` 的「作用域原语」具体机制尚未深读（第 0 层只知其名）。

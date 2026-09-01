@@ -10,7 +10,7 @@
 
 ## 它是什么（用自己的话）
 
-`tools` 是 core 七包里的「工具注册表与执行流水线」：工具插件注册 schema + 执行器，`agent-loop` 让每次工具调用依次经过 `pre-execute → guards → execute → post-execute → finalizeContent → result` 的流水线。它还决定工具如何呈现给模型（native/code/both）。它是「模型能调用哪些工具、调用后怎么执行」的机制本体。
+`tools` 是 core 七包里的「工具注册表与执行流水线」：工具插件注册 schema + 执行器，`agent-loop` 让每次工具调用依次经过 `pre-execute → guards → execute → post-execute → finalizeContent → result` 的流水线。它还决定工具如何呈现给模型（native/ptc/both）。它是「模型能调用哪些工具、调用后怎么执行」的机制本体。
 
 ## 关键实体（逐个链接到 home）
 

@@ -1,6 +1,6 @@
 # 认知地图
 
-状态：草稿（2026-08-17，完成实验 001 日志锚点后首次落笔）｜已对照 rc.8（2026-08-21 版本对齐，补 LLM 缝推理回传/图片、横切机制取消收尾两处增量，断层新增 agent-loop 取消收尾待补）｜已对照 rc.2（2026-08-22 版本对齐，LLM 缝图片维度重构：Files API 为主、上限策略化、文本模型投影，见「rc.2 增量」；core 七包与 Agent Teams 源码无变化，其余结论仍成立）｜阶段 4 快照（2026-08-23，补「能力缝结构」：三角色对齐机制、scope 两级扁平、换 Provider 与能力面扩展两案例、seam 三篇笔记分工）
+状态：草稿（2026-08-17，完成实验 001 日志锚点后首次落笔）｜已对照 rc.8（2026-08-21 版本对齐，补 LLM 缝推理回传/图片、横切机制取消收尾两处增量，断层新增 agent-loop 取消收尾待补）｜已对照 rc.2（2026-08-22 版本对齐，LLM 缝图片维度重构：Files API 为主、上限策略化、文本模型投影，见「rc.2 增量」；core 七包与 Agent Teams 源码无变化，其余结论仍成立）｜阶段 4 快照（2026-08-23，补「能力缝结构」：三角色对齐机制、scope 两级扁平、换 Provider 与能力面扩展两案例、seam 三篇笔记分工）｜已对照 0.1.2-alpha.2（2026-09-01 版本对齐，section order 集中化、工具呈现模式 code→ptc、request/header 加 series、session projection 进 spine，见下方「0.1.2-alpha.2 增量」；core 七包结构、SESSION_FORMAT_VERSION=0、五层架构主干结论仍成立）
 
 ## 提纲（已知 / 未知 / 猜测）
 
@@ -10,7 +10,7 @@
 - **能力缝（seam）**：已知三角色（Def/Provider/Consumer）、为何含 Consumer、可替换四种机制（机制 1/2/3 写插件、机制 4 改配置；「改代码」= 写自定义插件而非改既有包源码）、行为不匹配的两种安全哲学、三角色构成与对齐机制（`inject` 声明 + `super(ctx,key)` 注册、request/spec 拆分、换 Provider 与能力面扩展两案例）、scope 两级扁平 + shadowing/restriction 作用方向、lineage 是数据不是结构；三篇笔记分工见下方「详解」。见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)、[notes/architecture/seam-structure.zh.md](notes/architecture/seam-structure.zh.md)、[notes/architecture/capability-seam-catalog.zh.md](notes/architecture/capability-seam-catalog.zh.md)。
 - **LLM 缝**：已知流式 chunk（block-start→delta→block-end）与聚合 message 的关系；未知真实 provider 的流式实现。
 - **提示词装配**：已知「先 logged 后投影、投影会裁剪会重排」；未知投影实现代码（`deriveMessages()`/`assembleContextFor`）。
-- **横切机制**：已知「模型可见⟺logged」、turn/step 继续条件、append-only + seq 引用 + `sourceEventSeqs` 三板斧。
+- **横切机制**：已知「模型可见⟺logged」（三套投影：surface / request-header 重建模型可见内容，sessionProjections 折叠客户端派生状态）、turn/step 继续条件、append-only + seq 引用 + `sourceEventSeqs` 三板斧。
 
 ## 详解
 
@@ -80,13 +80,20 @@ flowchart LR
 - **上限拆成一整套策略字段**：rc.8 的单一 `maxRequestImageBytes`（20 MiB）被 `offloadRequestImagesWithPolicy`（`RequestImageOffloadPolicy`）取代，拆为 `maxRequestFilesBytes`（128 MiB）、`maxInlineRequestImageBytes`（20 MiB 回退水位）、`maxImagesPerRequest`（600）、`imageOffloadByteQuantum`（64 MiB 步进）、`inlineImageOffloadByteQuantum`（10 MiB）、`imageOffloadCountQuantum`（20 张步进），以及 `filesApiTimeoutMs`、`fileExpiresAfterSeconds`、`fileRefreshMarginSeconds`、`fileQuotaCleanupBatch` 等 Files 生命周期字段。
 - **文本模型图片投影**：模型 `inputModalities` 不含 `image` 但消息含图时，`LlmRuntime` 用 `projectImagesForTextModel` 把图投影为文本占位（`textOnlyImageText`：`image omitted because this model accepts text only`）。
 
+**0.1.2-alpha.2 增量**（2026-09-01 对照 rc.2→0.1.2-alpha.2 diff 记录）：
+- **系统提示词 section order 集中化**：`system-prompt` 把约定俗成的 order 区间（`-100`=身份、`0`=persona、`100–199`=工具引导）改为集中分配的 `SECTION_ORDERS` 常量表（`HARNESS_IDENTITY:-1000`、`DEPLOYMENT_PERSONA:0`、工具引导带 `1000+`、`TOOLS_SDK:5000`、`STRUCTURED_OUTPUT:9900` 等），同 order 按 code-unit 名称排序。
+- **工具呈现模式 `code` → `ptc`**：`ToolPresentationMode` 从 `'native' | 'code' | 'both'` 改为 `'native' | 'ptc' | 'both'`；`Code Mode` 术语统一改为 `PTC mode`，`CodeDispatchLog`→`PtcDispatchLog`、`tools/code-dispatch-log`→`tools/ptc-dispatch-log`。
+- **`request/header` 新增 series**：`reason` 从 `'initial' | 'resume' | 'change'` 扩为 4 值（+`'series'`），新增 `startsSeries?: true` 字段——changed header 也开启一段独立的 model-message series。
+- **session projection 进 spine**：`agent-loop` 新增 `ctx.sessionProjections.register(turnBoundaryProjectionDefinition)`，`core/agent` 新增 `src/projection.ts`；`session-projection` 从 L2 能力层成为 L1 spine 的直接依赖（「host state reads → projections」迁移）。详见 [notes/mechanisms/session-projection.zh.md](notes/mechanisms/session-projection.zh.md)。
+- **`textOnlyImageText` 占位文本带 digest**：文本模型图片投影的占位从固定文案改为带 attachment digest（`…; attachment sha256:${digest}`）。
+
 ### 提示词装配（投影）
 
 「模型可见 ⟺ logged」：进模型的内容必先落日志，所以「发送 = 投影」——不需要专门 send 事件，因为发送的内容就是已 logged 的行。投影会**裁剪**（主请求装 system+历史+工具，起标题请求只装用户消息）也会**重排**（日志顺序=发生先后，请求顺序=system 在前历史在后）。`role` 与 `source.kind` 分离：前者标记「去路身份」，后者标记「来源身份」。
 
 ### 横切机制（四条不变量）
 
-1. **模型可见 ⟺ logged**：任何进模型的东西都能从日志追溯；`role`（去路）/`source.kind`（来源）分离共同服务此信条。
+1. **模型可见 ⟺ logged**：任何进模型的东西都能从日志追溯；`role`（去路）/`source.kind`（来源）分离共同服务此信条。「投影」共三套——surface / request-header 重建模型可见内容，sessionProjections 折叠客户端可见派生状态（见 [notes/mechanisms/session-projection.zh.md](notes/mechanisms/session-projection.zh.md)）。
 2. **turn/step 继续条件**：`finish.reason=tool-calls` → 工具跑、结果喂回、开新 step；`stop` → turn 结束。一个 turn = 若干 step。
 3. **日志三板斧**：`surfaceOp:append`（只增不改）、seq 号引用（指回不复制）、`sourceEventSeqs`（聚合体→原始碎片）。
 4. **日志 + 组合树双视角**：日志（`--dump-config` 输出是「组合树」，不是 jsonl）记「行为」，组合树记「候选行为者」；真正的行为者 = 候选 + 行为的匹配结果，组合树不直接点名。插件「在场」≠「在日志里留名」（机制 vs 行为）。

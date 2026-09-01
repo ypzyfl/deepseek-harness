@@ -139,8 +139,8 @@ Def 的通用预检：如果模型「明确不支持 image」但消息里带了�
 
 ### 配套机制：Files API 优先 + `RequestImageOffloadPolicy` 上限
 
-- **Files API 优先**（rc.2 起）：图片改走 Files API（`type: 'file'` + `file_id`），失败才回退内联 base64。`content.ts` 里的 `contentHasImage`/`offloadRequestImages` 处理的是「抽象的 image 内容块」，不关心背后是 file_id 还是 base64——Def 层对表示方式无感。
-- **`RequestImageOffloadPolicy`**（`content.ts:48-62`）：`maxImages`/`maxBytes`/`countQuantum`/`byteQuantum`/`representation` 组成「图片超出 Provider 路由预算时，确定性移除最旧图片、替换成文本占位符」的策略。确定性是关键（同样输入必然同样结果，满足「Model-visible ⟺ logged」）。该策略是 Def 提供的通用工具，Provider 用具体参数适配自己的预算。
+- **Files API 优先**（rc.2 起）：图片改走 Files API（`type: 'file'` + `file_id`），失败才回退内联 base64。`content.ts` 里的 `contentHasImage`/`offloadRequestImagesWithPolicy` 处理的是「抽象的 image 内容块」，不关心背后是 file_id 还是 base64——Def 层对表示方式无感。
+- **`RequestImageOffloadPolicy`**（`content.ts:135-150`）：`maxImages`/`maxBytes`/`countQuantum`/`byteQuantum`/`representation` 组成「图片超出 Provider 路由预算时，确定性移除最旧图片、替换成文本占位符」的策略。确定性是关键（同样输入必然同样结果，满足「Model-visible ⟺ logged」）。该策略是 Def 提供的通用工具，Provider 用具体参数适配自己的预算。
 
 ## 三处最值钱的设计点
 

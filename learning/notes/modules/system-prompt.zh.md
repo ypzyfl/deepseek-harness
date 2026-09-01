@@ -15,7 +15,7 @@
 ## 关键实体（逐个链接到 home）
 
 - `SystemPrompt`（`ctx.systemPrompt`）：组装注册表服务，`section`/`context`/`tools`/`variable`/`assemble`。
-- `PromptSection`（`{ name, order, text, complete? }`）：按 `order` 升序拼接的段；order 区间 `-100`=身份、`0`=persona、`100–199`=工具引导。
+- `PromptSection`（`{ name, order, text, complete? }`）：按 `order` 升序拼接的段；order 由集中分配的 `SECTION_ORDERS` 表定（`-1000`=harness 身份、`0`=persona、`1000+`=工具引导带），同 order 按 code-unit 名称排序。
 - `PromptAssembly`（`{ sections, tools, variables }`）：组装结果；工具 schema 属于组装结果的一部分。
 - `renderPrompt(assembly)`：插值 `{{var}}`、删空段、空行连接 → 最终系统提示词字符串。
 - `AssembleContext`：一次组装的用途（`scope`/`signal`/`agent`）。
@@ -32,6 +32,8 @@
 
 5. **原以为** 「系统提示词」和「请求信封」是两回事；**实际是** 系统提示词就是 `EpochHeader.system`，是请求信封（config + system + tools）的一个字段，走 `request/header` → `foldRequestHeader()` 这套重建（不是 surface 那套）。修正来源：session.zh.md 第 160、168–177 行（见 [log.zh.md](../mechanisms/log.zh.md)）。
 
+6. **原以为** section 的 `order` 是各插件各自约定俗成的数值区间（`-100` 身份、`0` persona、`100–199` 工具引导）；**实际是**（0.1.2-alpha.2 起）order 由 system-prompt 包**集中分配**的 `SECTION_ORDERS` 命名常量表（`HARNESS_IDENTITY:-1000`…`TOOLS_SDK:5000`…`STRUCTURED_OUTPUT:9900`）管理，插件经 `getSectionOrder(name)`/`getContextOrder(name)` 取位置，同 order 按 code-unit 名称排序。这改变了「谁决定顺序」的心智模型——从「约定俗成」到「集中分配稳定位置名」。修正来源：src/index.ts 的 `SECTION_ORDERS`/`CONTEXT_ORDERS` 表。
+
 ## 与相邻单元的关系（依赖谁 / 被谁依赖）
 
 - **依赖**：`scope`（`ScopedLayers` 做段/变量的作用域分层）、`llm`（`ToolSchema` 类型）。
@@ -45,7 +47,7 @@
 
 ## 验证方式
 
-- 运行时级：llm-inspector 实验（experiments/002）的 `options.system` 全文第一句就是 `You are an AI agent powered by DeepSeek Harness.`（`harness:identity`，order −100），后面跟 persona + 工具引导，可直接观察组装结果。
+- 运行时级：llm-inspector 实验（experiments/002）的 `options.system` 全文第一句就是 `You are an AI agent powered by DeepSeek Harness.`（`harness:identity`，order −1000），后面跟 persona + 工具引导，可直接观察组装结果。
 - 源码级：`harness:identity` 的构造见 src/index.ts 第 357–363 行；`section()` 的遮蔽语义见第 381 行起。
 
 ## 遗留问题（登记进 questions.zh.md）
