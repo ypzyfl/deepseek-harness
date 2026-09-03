@@ -1,6 +1,6 @@
 # 会话投影（session-projection）机制
 
-状态：草稿 | 已对照验证（2026-09-01 对照 packages/session/session-projection/src/index.ts、src/types.ts、README.zh.md、packages/core/agent-loop/src/index.ts、src/agent.ts、packages/core/agent/src/projection.ts）
+状态：草稿 | 已对照验证（2026-09-01 对照 packages/session/session-projection/src/index.ts、src/types.ts、README.zh.md、packages/core/agent-loop/src/index.ts、src/agent.ts、packages/core/agent/src/projection.ts）｜已对照 0.1.2-alpha.4（2026-09-02：注册表机制无变化；0.1.2-alpha.3 新增第二个投影单元 `turnOutline`，见「实例」节补充）
 
 ## 事实源（链接，不复述）
 
@@ -50,10 +50,12 @@
 
 `agent-loop` 注册了一个 host-only 单元 `turnBoundary`（`turnBoundaryProjectionDefinition`），折叠出 turn/step 边界事实：`openTurnStartSeq`（开着的 turn 的 `turn/start` seq，或 null）、`lastStepStartSeq`、`lastStepBoundary`（`{kind:'start'|'end', seq}`）、`lastTurn`。这是「host state reads → projections」迁移的代表——之前宿主直接读事件推断「turn 是否开着」，现在改用声明式投影；`core/agent` 新增 `projection.ts` 用 declaration merging 声明该 key 的类型。
 
+**第二个实例：`turnOutline`（0.1.2-alpha.3 增量）**：新包 `session-turn-outline` 在注册表上注册第二个单元 `turnOutline`——折叠「每个已开始轮次的 `turn/start` seq + 提示词/回复预览」，wire 视图是整值条目数组（consumer 整体替换，不合并），服务聊天轮次导航栏的「整会话按轮跳转」（向后分页越过某轮 `turn/start` 的 seq 即载入整轮）。与 `turnBoundary` 的分工印证了本笔记第 20 行的机制：`turnBoundary` host-only（宿主判「turn 是否开着」），`turnOutline` 带 wire 视图（客户端导航）；前者只算边界、后者还要有界预览并做「每轮至多推送三次」的变更流压流。它把第 44 行「**whole-value event rule**」落到客户端：wire 值是完整大纲，注册表的两道 `Object.is` 门靠「不相关事件返回同一引用」压掉草稿噪音。
+
 ## 与相邻单元的关系（依赖谁 / 被谁依赖）
 
 - **依赖**：`cordis`（`Service`）、`dsh-session`（`Session`/`SessionEvent`/`SessionHeader`）。
-- **被谁依赖**：`agent-loop`（注册 `turnBoundary`）、`tool-todo`（注册 `todos`）、`session-projection-cache`（持久缓存）、各客户端载体（`snapshot`/`onChanged`）。
+- **被谁依赖**：`agent-loop`（注册 `turnBoundary`）、`tool-todo`（注册 `todos`）、`session-turn-outline`（注册 `turnOutline`，0.1.2-alpha.3 起）、`session-projection-cache`（持久缓存）、各客户端载体（`snapshot`/`onChanged`）。
 - **与 log 机制的关系**：第三套投影，与 `surface`/`request/header` 正交，见 [log.zh.md](log.zh.md)。
 
 ## 我曾经的误解（原以为 → 实际是 → 修正来源）

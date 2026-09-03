@@ -1,6 +1,6 @@
 # 能力缝目录（capability-seams）学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 docs/capability-seams.zh.md 服务目录表 + scripts/gen-doc-graphs.ts 的 `SERVICE_ROLES` 手写数组）
+状态：草稿 | 已对照验证（2026-08-22 对照 docs/capability-seams.zh.md 服务目录表 + scripts/gen-doc-graphs.ts 的 `SERVICE_ROLES` 手写数组）｜已对照 0.1.2-alpha.4（2026-09-02 复核：ctx 键集合与 alpha.2 一致，仅 `ctx.sessionPersistence` 的 implementations 移除 `-sqlite`）
 
 ## 事实源（链接，不复述）
 
@@ -60,7 +60,7 @@
 |---|---|---|---|
 | `ctx.attachments` | attachment | attachment-local | host-runtime, llm-pi-ai |
 | `ctx.llm` | llm | llm-deepseek, llm-pi-ai, llm-replay | agent-loop, compaction-basic |
-| `ctx.sessionPersistence` | session-persistence | session-persistence-jsonl, -sqlite | agent-loop, tool-bash, hooks-×2, session-query×2, message-feedback |
+| `ctx.sessionPersistence` | session-persistence | session-persistence-jsonl（0.1.2-alpha.3 起唯一 first-party 实现，`-sqlite` 后端已移除；仓库外 provider 仍可实现同一 Def） | agent-loop, tool-bash, hooks-×2, session-query×2, message-feedback |
 | `ctx.settings` | settings | settings-file | llm-deepseek, llm-pi-ai, apiproxy |
 | `ctx.credentials` | credentials | credentials-local | llm-deepseek, llm-pi-ai, apiproxy |
 | `ctx.authorization` | authorization | （空，flow 由任意插件运行时注册） | llm-pi-ai |

@@ -1,6 +1,6 @@
 # 认知地图
 
-状态：草稿（2026-08-17，完成实验 001 日志锚点后首次落笔）｜已对照 rc.8（2026-08-21 版本对齐，补 LLM 缝推理回传/图片、横切机制取消收尾两处增量，断层新增 agent-loop 取消收尾待补）｜已对照 rc.2（2026-08-22 版本对齐，LLM 缝图片维度重构：Files API 为主、上限策略化、文本模型投影，见「rc.2 增量」；core 七包与 Agent Teams 源码无变化，其余结论仍成立）｜阶段 4 快照（2026-08-23，补「能力缝结构」：三角色对齐机制、scope 两级扁平、换 Provider 与能力面扩展两案例、seam 三篇笔记分工）｜已对照 0.1.2-alpha.2（2026-09-01 版本对齐，section order 集中化、工具呈现模式 code→ptc、request/header 加 series、session projection 进 spine，见下方「0.1.2-alpha.2 增量」；core 七包结构、SESSION_FORMAT_VERSION=0、五层架构主干结论仍成立）
+状态：草稿（2026-08-17，完成实验 001 日志锚点后首次落笔）｜已对照 rc.8（2026-08-21 版本对齐，补 LLM 缝推理回传/图片、横切机制取消收尾两处增量，断层新增 agent-loop 取消收尾待补）｜已对照 rc.2（2026-08-22 版本对齐，LLM 缝图片维度重构：Files API 为主、上限策略化、文本模型投影，见「rc.2 增量」；core 七包与 Agent Teams 源码无变化，其余结论仍成立）｜阶段 4 快照（2026-08-23，补「能力缝结构」：三角色对齐机制、scope 两级扁平、换 Provider 与能力面扩展两案例、seam 三篇笔记分工）｜已对照 0.1.2-alpha.2（2026-09-01 版本对齐，section order 集中化、工具呈现模式 code→ptc、request/header 加 series、session projection 进 spine，见下方「0.1.2-alpha.2 增量」；core 七包结构、SESSION_FORMAT_VERSION=0、五层架构主干结论仍成立）｜已对照 0.1.2-alpha.3 + 0.1.2-alpha.4（2026-09-02 版本对齐，JSONL-only 会话持久化、turnOutline 投影单元、seq/log offset 类型分离、base 默认 web_fetch、subagent steer 统一投递、PTC preset 去 workflow，见下方「0.1.2-alpha.3/4 增量」；core 七包结构、五层架构主干、日志三层模型、「模型可见 ⟺ logged」结论仍成立）
 
 ## 提纲（已知 / 未知 / 猜测）
 
@@ -44,7 +44,7 @@ seam 是 L2「能力层」的组织单位：Service Definition + Provider + Cons
 
 **三角色对齐机制**：对应关系不在 `--dump-config` 里（dump 只列「谁在场」，不画依赖箭头），而由两层机制表达，靠「服务键」对齐——Consumer 通过 `inject: ['shell']` 声明消费键；Provider 继承 Def 抽象类时 `super(ctx, 'shell')` 注册键。两者互不知晓对方具体包名，只认「键」这个中间层。
 
-**scope 两级扁平**：一项贡献要么全局、要么「恰好归属一个 scope key」，无作用域链、不向下继承。shadowing（子遮蔽父同名项，向下继承、近者胜出）与 restriction（先过滤全局集合、再合并 scoped 注册，scoped 覆盖/收窄全局）都作用在「具名工具 `ToolDefinition`」上。lineage（`parentSession`/`delegationDepth`/`origin`/`seedLength`）是「数据字段」不是「结构」——只记录父子事实，从不改变可见性。
+**scope 两级扁平**：一项贡献要么全局、要么「恰好归属一个 scope key」，无作用域链、不向下继承。shadowing（子遮蔽父同名项，向下继承、近者胜出）与 restriction（先过滤全局集合、再合并 scoped 注册，scoped 覆盖/收窄全局）都作用在「具名工具 `ToolDefinition`」上。lineage（`parentSession`/`delegationDepth`/`origin` + 0.1.2-alpha.4 起 `isSeeded`/`inheritedEventCount` 取代旧 `seedLength`）是「数据字段」不是「结构」——只记录父子事实，从不改变可见性。
 
 **换 Provider 与能力面扩展是同一原则的两面**：换 Provider（bash-local → bash-sandbox）和能力面扩展（LLM 缝加图片 `inputModalities: [text, image]`）都保持 Def 结构骨架不动——前者变的是 Provider 实现细节，后者变的是「Provider 声明 + Def 通用数据类型」，Def 的键/方法/生命周期都不变。深层原则：Def 提供「通用载体 + 通用门控」，Provider 用「声明」注入差异化能力。
 
@@ -87,6 +87,14 @@ flowchart LR
 - **session projection 进 spine**：`agent-loop` 新增 `ctx.sessionProjections.register(turnBoundaryProjectionDefinition)`，`core/agent` 新增 `src/projection.ts`；`session-projection` 从 L2 能力层成为 L1 spine 的直接依赖（「host state reads → projections」迁移）。详见 [notes/mechanisms/session-projection.zh.md](notes/mechanisms/session-projection.zh.md)。
 - **`textOnlyImageText` 占位文本带 digest**：文本模型图片投影的占位从固定文案改为带 attachment digest（`…; attachment sha256:${digest}`）。
 
+**0.1.2-alpha.3 / 0.1.2-alpha.4 增量**（2026-09-02 对照 alpha.2→alpha.4 diff 记录）：
+- **会话持久化只留 JSONL**（alpha.3）：`session-persistence-sqlite` 包整体删除，`session-persistence-jsonl` 成为 `ctx.sessionPersistence` 唯一 first-party 实现；`session-query-sqlite`（FTS5 检索）与 `storage-sqlite`（通用 domain-KV）保留——它们是**可丢弃的派生索引**，不是另一种权威 store。旧 SQLite 数据库不迁移，需要内容者先经仍含该 provider 的 build 导出。权威记录见 `jsonl-only-session-persistence` Agent Note（2026-08-30）。
+- **`turnOutline` 投影单元新增**（alpha.3）：新包 `session-turn-outline` 在 `sessionProjections` 注册第二个单元（host-only `turnBoundary` 之后），折叠全日志轮次大纲（`turn/start` seq + 有界提示词/回复预览），服务聊天轮次导航的「整会话按轮跳转」。详见 [notes/mechanisms/session-projection.zh.md](notes/mechanisms/session-projection.zh.md)。
+- **事件 seq 与 log offset 类型分离**（alpha.4）：`SessionSeq`（一条已存在事件）vs `SessionLogOffset`（日志间隙/前缀长度/读取切点）两个 brand 强制区分事件身份与间隙坐标；`SessionHeader.seedLength` 数值坐标移除 → `isSeeded: boolean` + 带正文 observation 的 `inheritedEventCount`。磁盘 v0 字节兼容、wire 不变、**行为不变**——是「类型卫生」加固，不推翻既有三层模型。权威记录见 `session-sequence-and-log-offset-brands` Agent Note（2026-08-31）。详见 [notes/mechanisms/log.zh.md](notes/mechanisms/log.zh.md)。
+- **base 默认暴露 web_fetch**（alpha.4）：`bundle/base` 的 `cordis.patch.yml` 默认挂载 `tool-web`（`fetch: true` + 60s 搜索超时），headless / SDK / ACP / base-only profile 均继承 `web_search` + `web_fetch`（`sdk-minimal` 不用 base 除外）；web-app 禁用该 base 项、按 agent preset 组装同对工具。效果：基于 base 的模型请求默认暴露抓取 schema 与 prompt 指引，快照 header 同步变化。
+- **subagent steer 统一 adjacent agent 投递**（alpha.4）：steer 到同进程 adjacent agent 的投递路径统一，跟随消息的图片可靠送达（此前部分路径丢图）。能力面行为变化，spine/seam 结构结论不变。
+- **PTC mode 移除 workflow**（alpha.4）：preset 的 PTC 组合不再含 workflow 工具。
+
 ### 提示词装配（投影）
 
 「模型可见 ⟺ logged」：进模型的内容必先落日志，所以「发送 = 投影」——不需要专门 send 事件，因为发送的内容就是已 logged 的行。投影会**裁剪**（主请求装 system+历史+工具，起标题请求只装用户消息）也会**重排**（日志顺序=发生先后，请求顺序=system 在前历史在后）。`role` 与 `source.kind` 分离：前者标记「去路身份」，后者标记「来源身份」。
@@ -103,3 +111,5 @@ flowchart LR
 
 - patch 的「insert 新条目后、后续 patch 能否再对 inserted 条目 patch」这个边界语义（`applyEntryPatches` 的 inserted-row 索引修复）未读，需读 Cordis include 源码。
 - `agent-loop` 取消收尾的实现（`BlockAssembler.interruptedBlocks()` + `agent.ts` 的 catch 分支，rc.8 新增）未读，只知道「补 `interrupted: true` 锚点」的行为；精读 agent-loop 时补。
+- `Session.ownEvents()` / `isOwnSeq()` 及持久化 adapter 的 number→brand 验证点（seq/offset 分离的落地细节）未精读——alpha.4 类型卫生的具体接线。
+- `turnOutline` 单元与 `session-controller` 的 `loadThrough` 分页、客户端 turn rail 的「已加载窗口 vs 全日志大纲」分工未读（0.1.2-alpha.3/4 新增 UI 能力面）。

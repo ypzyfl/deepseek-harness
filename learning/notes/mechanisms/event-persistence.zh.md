@@ -1,6 +1,6 @@
 # 事件持久性（event persistence）学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 experiments/003-turn-trace.zh.md、packages/core/agent-loop/src/agent.ts、packages/llm/llm/src/index.ts）
+状态：草稿 | 已对照验证（2026-08-22 对照 experiments/003-turn-trace.zh.md、packages/core/agent-loop/src/agent.ts、packages/llm/llm/src/index.ts）｜已对照 0.1.2-alpha.4（2026-09-02：扩展点语义与持久/扩展判据无变化；agent.ts/llm index.ts 行号随 seq/log-offset 重构漂移，已刷新）
 
 ## 事实源（链接，不复述）
 
@@ -99,12 +99,12 @@ harness 的事件分两类，本质不同：**持久会话事件**是「已经�
 
 | 扩展点 | 源码位置 | 触发时机（相对持久事件） |
 |---|---|---|
-| `agent/pre-step` | `agent.ts` 第 234 行 `dispatch.waterfall` | seq 5（claim）后、seq 6（step/start）前 |
-| `agent/request` | `agent.ts` 第 457 行 `dispatch.waterfall` | seq 10（request/header）前 |
-| `llm/stream` | `llm/src/index.ts` 第 921 行 `ctx.waterfall`，由 `agent.ts` 第 346 行 `llm.stream(request)` 触发 | seq 10（header）后、seq 13（chunk）前 |
+| `agent/pre-step` | `agent.ts` 第 243 行 `dispatch.waterfall` | seq 5（claim）后、seq 6（step/start）前 |
+| `agent/request` | `agent.ts` 第 478 行 `dispatch.waterfall` | seq 10（request/header）前 |
+| `llm/stream` | `llm/src/index.ts` 第 1059 行 `ctx.waterfall`，由 `agent.ts` 第 364 行 `llm.stream(request)` 触发 | seq 10（header）后、seq 13（chunk）前 |
 | `tools/pre-execute`→`execute`→`post-execute` | tools 包内，agent-loop 经 `executeToolCalls`（`tool-calls.ts`）调用 `ctx.tools.execute()` | seq 19（tool/call）后、seq 20（tool/result）前 |
-| `agent/request-error` | `agent.ts` 第 374 行 `dispatch.waterfall` | 模型请求失败时 |
-| `agent/turn-stopping` | `agent.ts` 第 296 行 `dispatch.serial` | seq 30（step/end）后、seq 31（turn/end）前 |
+| `agent/request-error` | `agent.ts` 第 392 行 `dispatch.waterfall` | 模型请求失败时 |
+| `agent/turn-stopping` | `agent.ts` 第 305 行 `dispatch.serial` | seq 30（step/end）后、seq 31（turn/end）前 |
 
 ## 结论三：surface 事件带 `surfaceOp` 标记
 

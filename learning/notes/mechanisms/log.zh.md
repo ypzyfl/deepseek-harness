@@ -1,6 +1,6 @@
 # 日志（log）学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/session/src/index.ts、surface.ts、docs/subsystems/session.zh.md、packages/core/agent-loop/src/invariant.ts、packages/client/ui-trajectory/README.zh.md）
+状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/session/src/index.ts、surface.ts、docs/subsystems/session.zh.md、packages/core/agent-loop/src/invariant.ts、packages/client/ui-trajectory/README.zh.md）｜已对照 0.1.2-alpha.4（2026-09-02：`SessionSeq`/`SessionLogOffset` 引入、`SessionHeader.seedLength` 移除，见下方「seq 与 log offset 的类型分离」；行号引用刷新）
 
 ## 事实源（链接，不复述）
 
@@ -61,7 +61,7 @@ export class Session {
 - **原始日志 `log`**：存全部 `SessionEvent`（含 chunk、边界、用量、消息、工具调用），是唯一真源，永不删改。
 - **surface `nodes`**：只存「能产生消息的事件」的 **seq 序号**（`number[]`），不是消息本身、也不是第二份数据。
 
-`deriveMessages()` 的流程（第 726–747 行）就是「读 nodes 的序号 → 回 log 里取事件 → 投影成消息」——**索引指向数据，不是两份数据并存**。
+`deriveMessages()` 的流程（第 790 行起）就是「读 nodes 的序号 → 回 log 里取事件 → 投影成消息」——**索引指向数据，不是两份数据并存**。
 
 三者关系（同一个 `Session` 对象内的三层视图，非流水线）：
 
@@ -134,9 +134,24 @@ surface 存在的**唯一目的**，是支撑「从日志重建模型历史」�
 
 「模型可见 ⟺ logged」由上面两套重建投影满足；此外还有**第三套** `ctx.sessionProjections`（会话投影注册表），它**不**服务「模型可见」，而是折叠「客户端/宿主可见的派生状态」（todo 清单、goal 快照、turn 边界）。三者都「从日志派生」，但目的正交——详见 [session-projection.zh.md](session-projection.zh.md)。
 
+### seq 与 log offset 的类型分离（0.1.2-alpha.4 增量）
+
+0.1.2-alpha.4 起，日志里的两种「数值位置」在**类型层**被强制区分（`@deepseek-ai/dsh-brand` 的 `BrandedNumber<B>`，见 `types.ts`）——此前同一 `number` 类型同时表达两种不兼容含义：
+
+| brand | 指什么 | 例 |
+|---|---|---|
+| `SessionSeq` | **一条已存在的事件**（事件身份） | `SessionEvent.seq`、surface `nodes`、`surfaceOp.replace` 端点、`sourceEventSeqs`、`SessionSeqCursor = SessionSeq \| -1` |
+| `SessionLogOffset` | **日志间隙/前缀长度/读取切点**（可等于事件总数） | `Session.seq`、`firstLiveSeq`、`inheritedEventCount`、带正文读取的偏移 |
+
+判断口诀：**seq 是「第几条」的身份，offset 是「切到哪」的边界**——surface 节点、provenance 指向已存在事件所以是 `SessionSeq`；继承前缀长度、watermark、读取切点落在事件间隙所以是 `SessionLogOffset`。`number` 只有在带正文解析/验证后才重新进入任一领域（验证构造函数拒绝负数/小数/非安全整数）。
+
+连带变化：逻辑 `SessionHeader.seedLength`（数值）→ `isSeeded: boolean` + 带正文 observation 的 `inheritedEventCount: SessionLogOffset`；`Session.ownEvents()`/`isOwnSeq()` 向普通 consumer 隐藏比较。磁盘 v0 JSONL 字节兼容、API/SDK wire 仍是普通 number（adapter 在入 domain code 时验证）。
+
+对「日志三层模型」结论的影响：**行为无变化**（append-only、surface seq 引用、deriveMessages 重建都不变），这是「类型卫生」加固——防止把事件身份与间隙位置混用导致迁移漏改；也不推翻「`surface.nodes` 是 seq 序号索引」的说法，只是该序号现在是 `SessionSeq`。权威记录见 2026-08-31 `session-sequence-and-log-offset-brands` Agent Note。
+
 ## 核心重点三：surface 筛哪三类消息，为什么是这三类
 
-surface 只筛三类事件（源码硬编码，`surface.ts` 第 15–19 行）：
+surface 只筛三类事件（源码硬编码，`surface.ts` 第 22–26 行）：
 
 ```ts
 const SURFACE_EVENT_TYPES = new Set(['user/message', 'assistant/message', 'tool/result'])
@@ -196,7 +211,7 @@ const SURFACE_EVENT_TYPES = new Set(['user/message', 'assistant/message', 'tool/
 
 ## 验证方式
 
-- 源码级：`deriveMessages()` 闭环见 `session/src/index.ts` 第 726–747 行；`SURFACE_EVENT_TYPES` 见 `surface.ts` 第 15–19 行；invariant 比对见 `agent-loop/src/invariant.ts` 第 39–42 行。
+- 源码级：`deriveMessages()` 闭环见 `session/src/index.ts` 第 790 行起；`SURFACE_EVENT_TYPES` 见 `surface.ts` 第 22–26 行；invariant 比对见 `agent-loop/src/invariant.ts` 第 39–42 行。
 - 运行时级：llm-inspector 实验（experiments/002）的 `options.system` / `options.messages` 可直接观察；Trajectory（web profile）可观察原始日志。
 
 ## 遗留问题（登记进 questions.zh.md）

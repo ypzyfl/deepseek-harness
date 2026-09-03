@@ -1,6 +1,6 @@
 # session 学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/session/README.zh.md、packages/core/session/src/index.ts、packages/core/session/src/surface.ts、packages/core/agent-loop/src/agent.ts、packages/core/agent-loop/src/invariant.ts、packages/client/ui-trajectory/README.zh.md）
+状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/session/README.zh.md、packages/core/session/src/index.ts、packages/core/session/src/surface.ts、packages/core/agent-loop/src/agent.ts、packages/core/agent-loop/src/invariant.ts、packages/client/ui-trajectory/README.zh.md）｜已对照 0.1.2-alpha.4（2026-09-02：行为无变化；`surface.nodes` 的 seq 现在是 `SessionSeq` brand，`SessionHeader.seedLength` 移除，行号引用刷新）
 
 ## 事实源（链接，不复述）
 
@@ -20,16 +20,16 @@
 - `SessionStore`（`ctx.sessions`）：创建/持有 `Session`，`create`/`fork`/`get`/`list`/`flush`。
 - `SessionSurface` / `SurfaceManager`：surface 层，`nodes` 只存 3 类消息事件的 seq 序号。
 - `deriveMessages()`：从 surface.nodes 取序号 → 去 log 取消息 → 返回 `Message[]`。
-- `deriveEventMessage(event)`：单个事件的投影规则（surface.ts 第 83–114 行）。
+- `deriveEventMessage(event)`：单个事件的投影规则（surface.ts 第 90 行起）。
 - `SessionEventMap`：可声明合并扩展的事件词汇（三项前置检查 ③ 的落点）。
 
 ## 我曾经的误解（原以为 → 实际是 → 修正来源）——本笔记的黄金内容
 
-1. **原以为** 原始日志和 surface 是两个分开的存储；**实际是** 它们是**同一个 `Session` 对象里的「数据」和「索引」**——`log: SessionEvent[]` 存全部事件，`SurfaceManager.nodes` 只存 3 类消息事件的 seq 序号，`deriveMessages()` 用序号去 log 取消息。修正来源：src/index.ts 第 425–433、726–747 行。
+1. **原以为** 原始日志和 surface 是两个分开的存储；**实际是** 它们是**同一个 `Session` 对象里的「数据」和「索引」**——`log: SessionEvent[]` 存全部事件，`SurfaceManager.nodes` 只存 3 类消息事件的 seq 序号，`deriveMessages()` 用序号去 log 取消息。修正来源：src/index.ts 第 426 行起（`Session` 成员）、第 790 行起（`deriveMessages()`）。
 
-2. **原以为** surface 的「3 类消息事件」是凭经验归类；**实际是** 源码硬编码 `SURFACE_EVENT_TYPES = ['user/message', 'assistant/message', 'tool/result']`，其余（chunk/边界/用量）永不进 surface。修正来源：surface.ts 第 15–19 行。
+2. **原以为** surface 的「3 类消息事件」是凭经验归类；**实际是** 源码硬编码 `SURFACE_EVENT_TYPES = ['user/message', 'assistant/message', 'tool/result']`，其余（chunk/边界/用量）永不进 surface。修正来源：surface.ts 第 22–26 行。
 
-3. **原以为** `deriveMessages()` 的目的是「过滤掉不该给 LLM 看的日志」；**实际是** 它是「**投影**」（形态变换：事件 → 消息），过滤只是副作用之一。它做三件事：筛出 3 类消息事件、从事件 envelope 解包 `message`、跳过空 content 的 assistant/message。修正来源：surface.ts 第 83–114 行 `deriveEventMessage` 的 switch。
+3. **原以为** `deriveMessages()` 的目的是「过滤掉不该给 LLM 看的日志」；**实际是** 它是「**投影**」（形态变换：事件 → 消息），过滤只是副作用之一。它做三件事：筛出 3 类消息事件、从事件 envelope 解包 `message`、跳过空 content 的 assistant/message。修正来源：surface.ts 第 90 行起 `deriveEventMessage` 的 switch。
 
 4. **原以为** `deriveMessages()` 只是「供请求组装调用」；**实际是** 它**还是「可重建」断言的规范动作**——`invariant.ts` 独立再调一次，拿结果和实际 `options.messages` 比对，不等即 fail（`log-reconstruction desync`）。修正来源：invariant.ts 第 39–42 行。
 
@@ -43,7 +43,7 @@
 
 ## 验证方式
 
-- 源码级：`deriveMessages()` 的「读 nodes → 去 log 取消息」闭环见 src/index.ts 第 726–747 行；invariant 比对见 invariant.ts 第 39–42 行。
+- 源码级：`deriveMessages()` 的「读 nodes → 去 log 取消息」闭环见 src/index.ts 第 790 行起；invariant 比对见 invariant.ts 第 39–42 行。
 - 运行时级：`llm-inspector` 实验（experiments/002）里 `options.messages` 就是 `deriveMessages()` 的输出，可直接观察。
 
 ## 遗留问题（登记进 questions.zh.md）

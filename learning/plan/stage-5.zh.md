@@ -94,8 +94,8 @@ experiments：
 
 ## 过关检验自测（完成时逐条打勾）
 
-> 说明：已走完的 PoC 验证（前端注入链路 / DSH_HOME 沙箱 / tsdown 契约 / 依赖版本锁定，见 [guide/custom-plugin.zh.md](../guide/custom-plugin.zh.md) 第 8 节）不构成过关标准③的 keyless snapshot——cookbook verify 步骤与 keyless snapshot 尚未走完，故本节保持未勾选。
+> 说明：阶段 5 按「仓外插件、零污染」目标视为完成（见 index.zh.md 进度看板）。② 已满足；①（cookbook verify，需进入 dsh 主仓）与 ③（keyless snapshot，属阶段 6 主题）因当前目标为「对 dsh 源码零污染、暂不进入主仓、暂不关注 keyless」，**有意延后到阶段 7 之后回填**。
 
-- [ ] ① 所选 cookbook 指南的全部 verify 步骤通过（工具路径 = 工具被调用并返回正确结果；包路径 = 五条门禁命令全绿）
-- [ ] ② 改动遵守「挂在已文档化扩展点」而非改 loop（能指认扩展点，未触碰 `agent-loop`）
-- [ ] ③ 若触及模型/用户可见行为，同 PR 的 keyless snapshot 已补（未触及则此项记 N/A 并说明依据）
+- [ ] ① 所选 cookbook 指南的全部 verify 步骤通过（工具路径 = 工具被调用并返回正确结果；包路径 = 五条门禁命令全绿）——**暂缓**
+- [x] ② 改动遵守「挂在已文档化扩展点」而非改 loop（能指认扩展点，未触碰 `agent-loop`）——tool-notes 经 `ctx.tools.register` + `defineTool` 挂扩展点，未改 loop
+- [ ] ③ 若触及模型/用户可见行为，同 PR 的 keyless snapshot 已补（未触及则此项记 N/A 并说明依据）——**暂缓**（随阶段 6 回填）

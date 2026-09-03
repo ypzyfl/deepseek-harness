@@ -1,6 +1,6 @@
 # lineage 是数据不是结构 学习笔记
 
-状态：草稿 | 已对照验证（2026-08-23 对照 docs/glossary.zh.md agent-scope 词条、packages/core/session/src/types.ts、packages/subagent/subagent/src/depth.ts）
+状态：草稿 | 已对照验证（2026-08-23 对照 docs/glossary.zh.md agent-scope 词条、packages/core/session/src/types.ts、packages/subagent/subagent/src/depth.ts）｜已对照 0.1.2-alpha.4（2026-09-02：`SessionHeader.seedLength` 移除，改由 `isSeeded` + `inheritedEventCount` 承载，见 types.ts 与 2026-08-31 session-sequence-and-log-offset-brands Agent Note）
 
 ## 事实源（链接，不复述）
 
@@ -22,7 +22,10 @@ lineage 不是某种专门的数据结构，而是散落在 `SessionHeader` 里�
 | `parentSession` | `SessionId \| undefined` | 这个会话从谁 fork 出来（seed lineage） | "The session this one was forked from" |
 | `delegationDepth` | `number \| undefined` | 委托深度：顶层缺省 = 0，子 agent = 父 + 1 | "parent depth + 1 for a subagent child" |
 | `origin` | `'subagent' \| undefined` | 是否作为 subagent 子会话创建 | "coarse product classification" |
-| `seedLength` | `number \| undefined` | 继承了多少条前置事件（父历史与子工作的分界） | "distinguish parent history from child work" |
+| `isSeeded` | `boolean` | 是否有 fork 继承的事件前缀（0.1.2-alpha.4 起取代旧 `seedLength` 数值坐标；是否继承由布尔标记，不携带条数） | "Whether this Session contains a fork-inherited event prefix" |
+| `inheritedEventCount` | `SessionLogOffset \| undefined` | 继承前缀的**精确条数 cut**——0.1.2-alpha.4 起不在 `SessionHeader` 上，而在带正文的构造/读取 observation（`CreateSessionOptions` / `RestoredSessionOptions`）旁携带 | "Exact fork-inherited prefix length when `meta.isSeeded` is true" |
+
+> 0.1.2-alpha.4 起 `SessionHeader` 不再有 `seedLength`（v0 JSONL 头在磁盘上保持字节兼容：缺 `seedLength` 解码为 `isSeeded:false`，存在则解码为 `isSeeded:true` + 精确 cut）。精确继承条数改由 `inheritedEventCount: SessionLogOffset` 承载，因为前缀长度是「日志间隙/读取切点」（log offset 域）而非「事件身份」（seq 域）——这也带动了 `SessionSeq` / `SessionLogOffset` 两个 brand 的引入（详见 [log.zh.md](log.zh.md)）。「lineage 是数据不是结构」的结论不变：这些仍是散落的普通字段，不参与可见性。
 
 对照 glossary `agent-scope` 词条的 lineage 名单（`parentSession`、持久的 `delegationDepth`、运行时 `subagentDepth`）——三者全部落在这组字段上；运行时 `subagentDepth` 另在 `depth.ts`（`AgentOptions.subagentDepth`，`delegationDepthOf()` 里 `Math.max(header.delegationDepth, runtime.subagentDepth)` 取较大者）。
 

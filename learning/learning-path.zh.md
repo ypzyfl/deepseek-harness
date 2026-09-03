@@ -123,7 +123,7 @@ flowchart TB
 | 执行环境 | `shell`（Bash 执行缝 + 本地实现 + 工具）· `terminal`（持久 PTY 会话）· `subprocess`（子进程缝 + 本地进程树）· `sandbox`（进程约束：bwrap/Landlock/Seatbelt）· `code-runtime`（worker 线程代码执行 + PTC mode）· `fs`（文件系统缝 + 文件工具）· `lsp`（语言服务器缝 + `lsp` 工具）· `e2b`（E2B 远程沙箱，POC） |
 | 知识与外部信息 | `skill`（技能注册表 + 目录/加载工具）· `web`（搜索/抓取缝与工具）· `attachment`（附件身份与内容寻址存储）· `spill`（工具结果外溢存储） |
 | 委派与自我扩展 | `subagent`（子 agent 委派缝与工具）· `workflow`（工作流缝 + worker 线程引擎 + `workflow`/`ralph` 工具）· `jobs`（后台任务 + `job_*` 控制工具）· `extensions`（运行时自检与插件挂载——自我修改）· `hooks`（Claude Code/Codex 钩子桥 + wire 协议库） |
-| 数据与持久化 | `session`（持久化缝 + JSONL/SQLite 后端、投影、标题、报告）· `session-query`（会话检索：语料、血缘、全文搜索）· `storage`（非会话存储枢纽）· `settings`（用户设置缝 + 文件 provider）· `credentials`（凭据引用缝 + env/.env provider）· `identity`（匿名身份）· `workspace`（工作区实体） |
+| 数据与持久化 | `session`（持久化缝 + JSONL 后端（0.1.2-alpha.3 起为唯一 first-party 实现，SQLite 后端已移除）、投影、标题、报告）· `session-query`（会话检索：语料、血缘、全文搜索）· `storage`（非会话存储枢纽）· `settings`（用户设置缝 + 文件 provider）· `credentials`（凭据引用缝 + env/.env provider）· `identity`（匿名身份）· `workspace`（工作区实体） |
 | 人机协作与防护 | `interaction`（审批/交互缝、权限预设、命令、ask-user 工具）· `guard`（循环卫生守卫 + 工具超时强制） |
 
 组合层与接口层：
