@@ -10,10 +10,11 @@
 | `plan/` | 各阶段执行路线与逐步勾选进度，见 [plan/stage-2.zh.md](plan/stage-2.zh.md)、[plan/stage-3.zh.md](plan/stage-3.zh.md)、[plan/stage-4.zh.md](plan/stage-4.zh.md)、[plan/stage-5.zh.md](plan/stage-5.zh.md) |
 | [method.zh.md](method.zh.md) | 学习方法：宪法、目录规则、记录方式（journal 两级 / questions 三态 / map 两级）、笔记模板 |
 | [questions.zh.md](questions.zh.md) | 开放问题池（三态流转） |
-| `experiments/` | 动手实验，见 [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)、[experiments/002-llm-inspector.zh.md](experiments/002-llm-inspector.zh.md)、[experiments/003-turn-trace.zh.md](experiments/003-turn-trace.zh.md)、[experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md) |
+| `experiments/` | 动手实验，见 [experiments/001-log-anchor.zh.md](experiments/001-log-anchor.zh.md)、[experiments/002-llm-inspector.zh.md](experiments/002-llm-inspector.zh.md)、[experiments/003-turn-trace.zh.md](experiments/003-turn-trace.zh.md)、[experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md)、[experiments/005-acp-minimal-client.zh.md](experiments/005-acp-minimal-client.zh.md) |
+| `scripts/` | 可跑脚本：见 [scripts/try-acp.mjs](scripts/try-acp.mjs)（ACP 最小客户端）、[scripts/try-acp-repl.mjs](scripts/try-acp-repl.mjs)（多轮对话 REPL） |
 | `journal/` | 认知事件原始记录（`YYYY-MM-DD-slug.zh.md`） |
 | `notes/` | 认知单元（每篇一个可独立复述的理解）：architecture / mechanisms / modules |
-| `guide/` | 指导性手册（长期反复照做的操作手册）：见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md) |
+| `guide/` | 指导性手册（长期反复照做的操作手册）：见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md)、[guide/acp-minimal-client.zh.md](guide/acp-minimal-client.zh.md) |
 | `map.zh.md` | 认知地图（整体心智模型快照，理解浮现后落笔） |
 
 ### journal 现有记录
@@ -38,6 +39,7 @@
 - [2026-08-26-05-browser-debug-and-ide-tooling.md](journal/2026-08-26-05-browser-debug-and-ide-tooling.md) — 浏览器半断点收尾：Node 断点错位 + `.tsx` 导入报错（NodeNext）+ tasks.json cwd 三连坑（多根工作区）
 - [2026-09-01-01-session-projection-fold-vs-log-organization.md](journal/2026-09-01-01-session-projection-fold-vs-log-organization.md) — 会话投影「折叠」≠「组织日志」：方向先反了（账本算余额；turn 边界是算出来的派生状态）
 - [2026-09-01-02-request-header-series-not-batching.md](journal/2026-09-01-02-request-header-series-not-batching.md) — request/header 的 series：不是批处理，是「分段标记」（以存储换精确重建）
+- [2026-09-03-01-acp-admission-settlement-cancel.md](journal/2026-09-03-01-acp-admission-settlement-cancel.md) — 阶段 7 ACP：准入/结算/取消两段式生命周期（分界线 `messageQueued`）+「ACP 不是 UI」定位翻转
 
 ### journal 主题聚合
 
@@ -57,7 +59,7 @@
 | 4 | 能力缝与 scope | 完成 | 执行路线见 [plan/stage-4.zh.md](plan/stage-4.zh.md)；缝全景目录（三堆分类 + 三角色表 + mode 判据）见 [notes/architecture/capability-seam-catalog.zh.md](notes/architecture/capability-seam-catalog.zh.md)；seam 通用结构（三角色对齐 + request/spec + 换 Provider/能力面扩展）见 [notes/architecture/seam-structure.zh.md](notes/architecture/seam-structure.zh.md)；可替换四机制扩充见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)；scope 两级扁平 + shadowing/restriction 见 [notes/modules/scope.zh.md](notes/modules/scope.zh.md)；lineage 是数据不是结构见 [notes/mechanisms/lineage-data-not-structure.zh.md](notes/mechanisms/lineage-data-not-structure.zh.md)；拆三角色动手见 [experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md)；读法辨析见 [journal/2026-08-22-02-stage4-seam-catalog-reading.md](journal/2026-08-22-02-stage4-seam-catalog-reading.md) 与 [journal/2026-08-23-01-stage4-seam-scope-structure.md](journal/2026-08-23-01-stage4-seam-scope-structure.md)、[journal/2026-08-23-02-stage4-shell-seam-reading.md](journal/2026-08-23-02-stage4-shell-seam-reading.md) |
 | 5 | 扩展实践 | 完成 | 执行路线见 [plan/stage-5.zh.md](plan/stage-5.zh.md)；仓外插件方案调研（零污染/前端注入/debug/检查对齐）见 [notes/architecture/out-of-tree-plugin.zh.md](notes/architecture/out-of-tree-plugin.zh.md)；操作手册见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md)；认知翻转见 [journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md](journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md)、[journal/2026-08-26-02-poc-build-tsdown-version-drift.md](journal/2026-08-26-02-poc-build-tsdown-version-drift.md)、[journal/2026-08-26-03-install-target-and-profile-isolation.md](journal/2026-08-26-03-install-target-and-profile-isolation.md)、[journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md](journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md)、[journal/2026-08-26-05-browser-debug-and-ide-tooling.md](journal/2026-08-26-05-browser-debug-and-ide-tooling.md)；cookbook verify 与 keyless snapshot 两项暂缓（见 [plan/stage-5.zh.md](plan/stage-5.zh.md) 过关检验自测） |
 | 6 | 测试策略与 keyless | 暂缓 | 调整至阶段 7 之后回填 |
-| 7 | 专项深入（按需） | 进行中 | 当前关注：agent-loop 与 ACP 集成 |
+| 7 | 专项深入（按需） | 进行中 | 当前关注：agent-loop 与 ACP 集成。ACP 已深入（定位 / 准入结算取消 / 与 loop 三接口触点 / self-nesting 闭环），见 [notes/modules/acp.zh.md](notes/modules/acp.zh.md)；操作手册见 [guide/acp-minimal-client.zh.md](guide/acp-minimal-client.zh.md)（已实测）；可跑脚本见 [scripts/](scripts/)（try-acp.mjs 单问 / try-acp-repl.mjs 多轮）；动手实验见 [experiments/005-acp-minimal-client.zh.md](experiments/005-acp-minimal-client.zh.md)；认知事件见 [journal/2026-09-03-01-acp-admission-settlement-cancel.md](journal/2026-09-03-01-acp-admission-settlement-cancel.md) |
 
 ## 重点学习清单
 
@@ -79,6 +81,7 @@
 | 某 profile 的纯默认配置（不含用户 patch） | `pnpm dsh --profile <name> --dump-default-config` |
 | 运行时真实落盘的会话日志 | 读 `~/.dsh/sessions/session.jsonl.zstd`（zstd 压缩，`zstd -dc` 解压） |
 | 快照测试期望日志（可读、占位符化） | `examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl` |
+| 用 ACP 起 agent 发问题收回答 | `node learning/scripts/try-acp.mjs`（DSH_HOME 沙箱已内置，不碰 ~/.dsh；需根 .env 有 key） |
 
 可用的 `<name>`：随发行版交付 `web`、`headless` 两个模板（`PROFILE_TEMPLATES` 按名字硬编码）；其他名字经 `pnpm dsh plugin --profile <name> add` 创建的是 DEFAULT profile（仅 `dsh-base`，无 web UI）——fork web 等价 profile 须手写三文件，见 [notes/architecture/out-of-tree-plugin.zh.md](notes/architecture/out-of-tree-plugin.zh.md)「install 落点与 profile 隔离」。
 

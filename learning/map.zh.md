@@ -11,6 +11,7 @@
 - **LLM 缝**：已知流式 chunk（block-start→delta→block-end）与聚合 message 的关系；未知真实 provider 的流式实现。
 - **提示词装配**：已知「先 logged 后投影、投影会裁剪会重排」；未知投影实现代码（`deriveMessages()`/`assembleContextFor`）。
 - **横切机制**：已知「模型可见⟺logged」（三套投影：surface / request-header 重建模型可见内容，sessionProjections 折叠客户端派生状态）、turn/step 继续条件、append-only + seq 引用 + `sourceEventSeqs` 三板斧。
+- **接口层（ACP）**：已知 ACP 是「仅面向自动化的协议传输层」（非 UI）、一次 prompt 的准入/结算/取消两段式生命周期（分界线 `messageQueued`）、与 agent-loop 无直接依赖（inject 只有 `agents`/`llm`/`sessionPersistence`/`sessions`，靠三个事件反向观察 loop）、被 `dsh-subagent-acp` 作为客户端 spawn 驱动（self-nesting 闭环）；见 [notes/modules/acp.zh.md](notes/modules/acp.zh.md)。
 
 ## 详解
 
@@ -106,6 +107,24 @@ flowchart LR
 3. **日志三板斧**：`surfaceOp:append`（只增不改）、seq 号引用（指回不复制）、`sourceEventSeqs`（聚合体→原始碎片）。
 4. **日志 + 组合树双视角**：日志（`--dump-config` 输出是「组合树」，不是 jsonl）记「行为」，组合树记「候选行为者」；真正的行为者 = 候选 + 行为的匹配结果，组合树不直接点名。插件「在场」≠「在日志里留名」（机制 vs 行为）。
 5. **取消流的收尾（rc.8 新增）**：流式输出被取消时，若已送达非空文本/推理内容，`agent-loop` 补一个带 `interrupted: true` 的 `assistant/message` 锚点（`session` 事件新增该可选字段），把已渲染前缀放进派生消息历史——让下一次请求包含用户已看到的内容；未分派的工具调用被省略。这是「模型可见 ⟺ logged」在取消路径上的延伸。
+
+### 接口层（ACP）
+
+ACP（`packages/acp/acp`）是 L4 接口层的一员，与 CLI/Web GUI/JSON-RPC SDK 并列。它的核心定位是「仅面向自动化的协议传输层」：把 `ctx.agents` 暴露成标准 ACP v1 stdio 服务器，只发「已提交语义事实」（消息/thought/工具生命周期/配置/用量），不发 DSH 私有呈现数据——它曾是编辑器桥接层，2026-07-23 决策精简成现在的自动化形态。
+
+一次 prompt 走「准入 → 结算」两段：准入（`followup()` 之前）是同步校验（快照路由、校验 Agent 身份、翻译内容、图片落盘、入队），失败则消息不进 inbox；结算（`followup()` 之后）是事件驱动的异步裁决（等 agent 空闲 + 更新排空，按优先级返回 `stopReason`）。取消也按同一条分界线分两段——分界线始终是 `InflightPrompt.messageQueued` 一个字段。
+
+它与 agent-loop **无直接依赖**：inject 只有 `agents`/`llm`/`sessionPersistence`/`sessions`，通过 `followup`/`cancel`/`whenIdle` 驱动、通过 `session/event`/`agent/inbox/claimed`/`agent/error` 三个事件反向观察 loop——是「loop 可替换」的又一实例。反过来，它被 `dsh-subagent-acp` 作为客户端 spawn 驱动，形成「agent 委派 agent」的自我嵌套闭环。
+
+```mermaid
+flowchart LR
+    A[ACP client<br/>dsh-subagent-acp] -- spawn + 驱动 --> B[dsh --profile acp<br/>ACP server]
+    B -- Agent 接口 followup/cancel/whenIdle --> C[ctx.agents<br/>Agent 接口]
+    C -. agent-loop 实现（可替换）.-> D[loop]
+    D -. 事件 session/event · inbox/claimed · error .-> B
+```
+
+详见 [notes/modules/acp.zh.md](notes/modules/acp.zh.md)。
 
 ## 已知的断层（下次要补）
 
