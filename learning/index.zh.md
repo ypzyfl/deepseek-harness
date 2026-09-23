@@ -15,6 +15,7 @@
 | `journal/` | 认知事件原始记录（`YYYY-MM-DD-slug.zh.md`） |
 | `notes/` | 认知单元（每篇一个可独立复述的理解）：architecture / mechanisms / modules |
 | `guide/` | 指导性手册（长期反复照做的操作手册）：见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md)、[guide/acp-minimal-client.zh.md](guide/acp-minimal-client.zh.md) |
+| `design/` | 项目设计方案（acp-hub 统一中间适配层）：见 [design/acp-hub-design-v1.zh.md](design/acp-hub-design-v1.zh.md) |
 | `map.zh.md` | 认知地图（整体心智模型快照，理解浮现后落笔） |
 
 ### journal 现有记录
@@ -40,11 +41,15 @@
 - [2026-09-01-01-session-projection-fold-vs-log-organization.md](journal/2026-09-01-01-session-projection-fold-vs-log-organization.md) — 会话投影「折叠」≠「组织日志」：方向先反了（账本算余额；turn 边界是算出来的派生状态）
 - [2026-09-01-02-request-header-series-not-batching.md](journal/2026-09-01-02-request-header-series-not-batching.md) — request/header 的 series：不是批处理，是「分段标记」（以存储换精确重建）
 - [2026-09-03-01-acp-admission-settlement-cancel.md](journal/2026-09-03-01-acp-admission-settlement-cancel.md) — 阶段 7 ACP：准入/结算/取消两段式生命周期（分界线 `messageQueued`）+「ACP 不是 UI」定位翻转
+- [2026-09-03-02-acp-client-adapter-directions.md](journal/2026-09-03-02-acp-client-adapter-directions.md) — ACP 客户端统一适配层：「统一」的两个正交方向（A 多场景封装 vs B 多后端适配）+ 仓库三处客户端写法已重复的事实
+- [2026-09-03-03-acp-adapter-layer-architecture.md](journal/2026-09-03-03-acp-adapter-layer-architecture.md) — ACP 统一中间适配层：方向 B 落定 + 背靠背架构（dsh 仓库本身就是实例：dsh-acp 前端半边 + subagent-acp 后端半边）+ 统一内核分层与落地顺序
+- [2026-09-03-04-acp-hub-design-finalized.md](journal/2026-09-03-04-acp-hub-design-finalized.md) — acp-hub 设计 v1 定稿 + M0 启动：四决策、SDK 调研两大发现（ActiveSession / in-process 直连）、「转换层=协商降级器非方言翻译器」的核心立场修正
 
 ### journal 主题聚合
 
 - [journal/topics/cordis-mechanics.zh.md](journal/topics/cordis-mechanics.zh.md) — Cordis 核心机制（串起 08-18 四篇：分发模式 / `!!js` / 实践规则 / 运行时vs类型解析）
 - [journal/topics/projection.zh.md](journal/topics/projection.zh.md) — 投影（日志派生状态）（串起日志三层模型 → 三套投影 → series 分段三篇）
+- [journal/topics/acp.zh.md](journal/topics/acp.zh.md) — ACP（串起准入/结算/取消 + 客户端适配层方向辨析两篇）
 
 ## 进度看板
 
@@ -59,7 +64,7 @@
 | 4 | 能力缝与 scope | 完成 | 执行路线见 [plan/stage-4.zh.md](plan/stage-4.zh.md)；缝全景目录（三堆分类 + 三角色表 + mode 判据）见 [notes/architecture/capability-seam-catalog.zh.md](notes/architecture/capability-seam-catalog.zh.md)；seam 通用结构（三角色对齐 + request/spec + 换 Provider/能力面扩展）见 [notes/architecture/seam-structure.zh.md](notes/architecture/seam-structure.zh.md)；可替换四机制扩充见 [notes/architecture/seam-and-replaceability.zh.md](notes/architecture/seam-and-replaceability.zh.md)；scope 两级扁平 + shadowing/restriction 见 [notes/modules/scope.zh.md](notes/modules/scope.zh.md)；lineage 是数据不是结构见 [notes/mechanisms/lineage-data-not-structure.zh.md](notes/mechanisms/lineage-data-not-structure.zh.md)；拆三角色动手见 [experiments/004-dump-config-seam-roles.zh.md](experiments/004-dump-config-seam-roles.zh.md)；读法辨析见 [journal/2026-08-22-02-stage4-seam-catalog-reading.md](journal/2026-08-22-02-stage4-seam-catalog-reading.md) 与 [journal/2026-08-23-01-stage4-seam-scope-structure.md](journal/2026-08-23-01-stage4-seam-scope-structure.md)、[journal/2026-08-23-02-stage4-shell-seam-reading.md](journal/2026-08-23-02-stage4-shell-seam-reading.md) |
 | 5 | 扩展实践 | 完成 | 执行路线见 [plan/stage-5.zh.md](plan/stage-5.zh.md)；仓外插件方案调研（零污染/前端注入/debug/检查对齐）见 [notes/architecture/out-of-tree-plugin.zh.md](notes/architecture/out-of-tree-plugin.zh.md)；操作手册见 [guide/custom-plugin.zh.md](guide/custom-plugin.zh.md)；认知翻转见 [journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md](journal/2026-08-26-01-out-of-tree-plugin-frontend-injection.md)、[journal/2026-08-26-02-poc-build-tsdown-version-drift.md](journal/2026-08-26-02-poc-build-tsdown-version-drift.md)、[journal/2026-08-26-03-install-target-and-profile-isolation.md](journal/2026-08-26-03-install-target-and-profile-isolation.md)、[journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md](journal/2026-08-26-04-dsh-home-sandbox-three-questions-switch.md)、[journal/2026-08-26-05-browser-debug-and-ide-tooling.md](journal/2026-08-26-05-browser-debug-and-ide-tooling.md)；cookbook verify 与 keyless snapshot 两项暂缓（见 [plan/stage-5.zh.md](plan/stage-5.zh.md) 过关检验自测） |
 | 6 | 测试策略与 keyless | 暂缓 | 调整至阶段 7 之后回填 |
-| 7 | 专项深入（按需） | 进行中 | 当前关注：agent-loop 与 ACP 集成。ACP 已深入（定位 / 准入结算取消 / 与 loop 三接口触点 / self-nesting 闭环），见 [notes/modules/acp.zh.md](notes/modules/acp.zh.md)；操作手册见 [guide/acp-minimal-client.zh.md](guide/acp-minimal-client.zh.md)（已实测）；可跑脚本见 [scripts/](scripts/)（try-acp.mjs 单问 / try-acp-repl.mjs 多轮）；动手实验见 [experiments/005-acp-minimal-client.zh.md](experiments/005-acp-minimal-client.zh.md)；认知事件见 [journal/2026-09-03-01-acp-admission-settlement-cancel.md](journal/2026-09-03-01-acp-admission-settlement-cancel.md) |
+| 7 | 专项深入（按需） | 进行中 | 当前关注：agent-loop 与 ACP 集成。ACP 已深入（定位 / 准入结算取消 / 与 loop 三接口触点 / self-nesting 闭环），见 [notes/modules/acp.zh.md](notes/modules/acp.zh.md)；操作手册见 [guide/acp-minimal-client.zh.md](guide/acp-minimal-client.zh.md)（已实测）；可跑脚本见 [scripts/](scripts/)（try-acp.mjs 单问 / try-acp-repl.mjs 多轮）；动手实验见 [experiments/005-acp-minimal-client.zh.md](experiments/005-acp-minimal-client.zh.md)；认知事件见 [journal/2026-09-03-01-acp-admission-settlement-cancel.md](journal/2026-09-03-01-acp-admission-settlement-cancel.md)、[journal/2026-09-03-02-acp-client-adapter-directions.md](journal/2026-09-03-02-acp-client-adapter-directions.md)（客户端适配层方向辨析）、[journal/2026-09-03-03-acp-adapter-layer-architecture.md](journal/2026-09-03-03-acp-adapter-layer-architecture.md)（方向 B 落定与背靠背架构，重点研究方向） |
 
 ## 重点学习清单
 
@@ -70,6 +75,7 @@
 | agent-loop（含 headless-runner） | 回合引擎是 harness 最底层、最稳定的核心；runner 是其 one-shot 外壳，二者关系是理解"loop 可替换、能力外挂"的钥匙 | 回合流已深入（见 [notes/modules/agent-loop.zh.md](notes/modules/agent-loop.zh.md) 核心重点四）；循环状态机/竞态仍待深入（阶段 7 专项） | [journal/2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) |
 | agent / agent-loop 的分工（接口与实现分离） | `dsh-agent` 定义 `AgentFactory` 接口 + `AgentRegistry`（登记活体 agent 的仓库）；`dsh-agent-loop` 是接口的默认实现（工厂 + 引擎）。「登记」与「创建」分离，接口/实现分离是「loop 可替换」的根源。另：`inject:['agents']` 的 `agents` 是服务（`ctx.agents`），与 `config.agents:[]` 的配置数组同名不同物 | 已印证（core.zh.md 第 20 行：「扩展插件依赖 agent，绝不直接依赖 agent-loop，因此循环保持可替换」） | [journal/2026-08-16-02-composition-tree-to-loop.md](journal/2026-08-16-02-composition-tree-to-loop.md) |
 | Agent Teams（`packages/experimental/agent-team` + `tool-agent-team`） | rc.8 引入的实验能力：多 agent 协作运行时，新增 `team/member`、`team/message/delivered`、`team/message/queued`、`team/task` 四个会话事件 | 待深入 | [map.zh.md](map.zh.md)（rc.8 变更） |
+| ACP 统一中间适配层（acp-hub） | ACP 是 dsh 对外的标准自动化面；方向 B（多后端统一，独立项目）：TypeScript 中间层背靠背架构——对后端 ACP client、对前端 ACP server + TS SDK 双投影，dsh 仓库本身就是该结构的实例（dsh-acp 前端半边 + subagent-acp 后端半边） | 设计 v1 已定稿（[design/acp-hub-design-v1.zh.md](design/acp-hub-design-v1.zh.md)），repo 落地 d:/Tech/Github/acp-hub，M0 骨架已初始化（2026-09-03），M1（内核+mock 后端）待启动 | [design/acp-hub-design-v1.zh.md](design/acp-hub-design-v1.zh.md)；journal 三篇（[02](journal/2026-09-03-02-acp-client-adapter-directions.md)/[03](journal/2026-09-03-03-acp-adapter-layer-architecture.md)/[04](journal/2026-09-03-04-acp-hub-design-finalized.md)）；[journal/topics/acp.zh.md](journal/topics/acp.zh.md)；实现期开放问题见 [questions.zh.md](questions.zh.md) |
 
 ## 常用命令备忘
 
