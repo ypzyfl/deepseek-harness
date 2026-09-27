@@ -61,7 +61,7 @@
 | `ctx.attachments` | attachment | attachment-local | host-runtime, llm-pi-ai |
 | `ctx.llm` | llm | llm-deepseek, llm-pi-ai, llm-replay | agent-loop, compaction-basic |
 | `ctx.sessionPersistence` | session-persistence | session-persistence-jsonl（0.1.2-alpha.3 起唯一 first-party 实现，`-sqlite` 后端已移除；仓库外 provider 仍可实现同一 Def） | agent-loop, tool-bash, hooks-×2, session-query×2, message-feedback |
-| `ctx.settings` | settings | settings-file | llm-deepseek, llm-pi-ai, apiproxy |
+| `ctx.settings` | settings | （空，settings-file 已删除；0.1.7-rc.1 起 settings 为 core 无 provider） | api-settings-controller |
 | `ctx.credentials` | credentials | credentials-local | llm-deepseek, llm-pi-ai, apiproxy |
 | `ctx.authorization` | authorization | （空，flow 由任意插件运行时注册） | llm-pi-ai |
 | `ctx.sessionTelemetry` | session-telemetry | session-telemetry-otel | （空，输出离开进程） |
@@ -70,28 +70,39 @@
 | `ctx.fileReferences` | file-reference | file-reference-local | （空，经 Remote 契约，消费方在浏览器侧） |
 | `ctx.sessionTitle` | session-title | session-title-first-prompt-llm, -all-prompts-llm | （空，注册表驱动） |
 | `ctx.userQuestions` | user-questions | （空，Provider 由 UI 前端运行时提供） | tool-ask-user |
-| `ctx.skills` | skill | skill-badge, skill-filesystem | tool-skill |
-| `ctx.subprocess` | subprocess | subprocess-local, subprocess-e2b | bash-local, bash-sandbox, terminal-bash, lsp-stdio, subagent-acp/codex/claude-code |
+| `ctx.skills` | skill | skill-badge, skill-filesystem, skill-office | tool-skill |
+| `ctx.subprocess` | subprocess | subprocess-local, subprocess-ssh | bash-local, bash-sandbox, terminal-bash, lsp-stdio, subagent-acp/codex/claude-code |
 | `ctx.shell` | shell | bash-local, bash-sandbox, pwsh-local | tool-bash, tool-pwsh, hooks-claude-code, hooks-codex |
 | `ctx.terminals` | terminal | terminal-bash | tool-terminal |
-| `ctx.sandbox` | sandbox | sandbox-local | bash-sandbox, terminal-bash |
-| `ctx.approval` | approval | acp | tools, tool-bash |
-| `ctx.codeRuntime` | code-runtime | code-runtime-worker | tools |
-| `ctx.fs` | fs | fs-local, fs-sandbox, fs-e2b | tool-fs |
+| `ctx.sandbox` | sandbox | sandbox-local, sandbox-ssh | bash-sandbox, terminal-bash |
+| `ctx.approval` | user-approval | （空，回答方是监听器，如 ACP 桥接） | tools, tool-bash, acp |
+| `ctx.ptcRuntime` | ptc-runtime | ptc-runtime-node, experimental-ptc-runtime-python | tools, workflow-ptc |
+| `ctx.fs` | fs | fs-local, fs-sandbox, fs-ssh | tool-fs |
 | `ctx.compaction` | compaction | compaction-basic | compaction-basic（同一包兼三角色） |
-| `ctx.subagents` | subagent | spawn/fork/acp/codex/claude-code/dsh-sdk（6 个） | tool-subagent, tool-subagent-control, tool-ralph |
+| `ctx.subagents` | subagent | subagent-spawn-in-process, -fork-in-process, -acp, -codex, -claude-code, -dsh-sdk（6 个） | tool-subagent, tool-subagent-control, tool-ralph |
 | `ctx.jobs` | jobs | jobs-local | tool-bash, tool-terminal, tool-subagent, tool-jobs |
 | `ctx.web` | web | web-search-exa/-perplexity/-deepseek, web-fetch-http | tool-web |
 | `ctx.spillStore` | spill | spill-local | spill-policy |
-| `ctx.directoryPicker` | directory-picker | directory-picker-native, -browse | apiproxy |
-| `ctx.workflowEngine` | workflow | workflow-worker-thread | tool-workflow, tool-ralph |
+| `ctx.directoryPicker` | host-directory-picker | host-directory-picker-native, -browse | api-workspace-controller |
+| `ctx.workflowEngine` | workflow | workflow-ptc | tool-workflow, tool-ralph |
 | `ctx.lsp` | lsp | lsp-local | tool-lsp |
+
+### 0.1.7-rc.1 重核增量（2026-09-24）
+
+上表 seam 的 provider 已按新版 [docs/capability-seams.zh.md](../../../docs/capability-seams.zh.md) 逐行修正：`code-runtime`→`ptc-runtime`（键改 `ctx.ptcRuntime`）、`workflow-worker-thread`→`workflow-ptc`、`approval` Def 改 `user-approval`（无 provider，回答方是监听器）、`settings-file` 删除（settings 变 core）、`subprocess`/`sandbox`/`fs` 补 SSH 系列 provider、`skills` 补 `skill-office`、`subagents` 与 `directory-picker` 的包名对齐新版。
+
+**但「60 键 / 28 seam / 30 core」的计数已随版本漂移**——新版新增了一批 seam 与 core 服务：
+
+- 新增 seam：`ctx.mcpResources`、`ctx.browserUse`、`ctx.computerUse`、`ctx.deepseekLlmApiExtensions`、`ctx.deepseekAccount`、`ctx.ptcRuntime`（替代 code-runtime）、`ctx.speechToText`。
+- 新增 core：`ctx.ssh`（POSIX SSH 连接 owner，fs-ssh/subprocess-ssh/sandbox-ssh 消费它）、`ctx.configEditor`、`ctx.workspaceFiles`、`ctx.workspaceChanges`、`ctx.sessionController` 等（api/* 控制器与 Remote 投影一批）。
+
+本笔记的价值在「seam 三角色结构 + mode 三值判据」，不在「完整清点」；完整、权威的缝清单以 [docs/capability-seams.zh.md](../../../docs/capability-seams.zh.md) 为准（它由 `scripts/gen-doc-graphs.ts` 生成，带完整性守卫）。
 
 ### core 堆（30 个）—— 主干服务，不是缝
 
 判据：`implementations` 列全空（core 没有「可替换后端」这层，不是「没有代码实现」）。
 
-`tokenMeter`、`toolResultPruner`、`sessions`、`invariants`、`typert`、`typertGateway`、`storageDomain`、`messageFeedback`、`workspaceRegistry`、`sessionReferenceResolver`、`systemPrompt`、`tools`、`planMode`、`agentPresets`、`commands`、`sessionProjections`、`sessionProjectionCache`、`agents`、`agentDefaultModel`、`goals`、`e2b`、`shellEnv`、`sandboxPolicy`、`permissionPresets`、`agentTeams`、`webServer`、`clientModules`、`apiProxy`、`dynamicCordisRunner`、`cordisInspect`
+`tokenMeter`、`toolResultPruner`、`sessions`、`invariants`、`typert`、`typertGateway`、`storageDomain`、`messageFeedback`、`workspaceRegistry`、`sessionReferenceResolver`、`systemPrompt`、`tools`、`planMode`、`agentPresets`、`commands`、`sessionProjections`、`sessionProjectionCache`、`agents`、`agentDefaultModel`、`goals`、`shellEnv`、`sandboxPolicy`、`permissionPresets`、`agentTeams`、`webServer`、`clientModules`、`apiProxy`、`dynamicCordisRunner`、`cordisInspect`
 
 > 其中 spine 六包（`session`/`system-prompt`/`tools`/`agent`/`agent-default-model`）都落在 core 堆；spine 第七包 `scope` 不在表里（无 ctx 键，见「我曾经的误解」第 2 条）。
 

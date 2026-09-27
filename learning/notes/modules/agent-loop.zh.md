@@ -1,6 +1,6 @@
 # agent-loop 学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/agent-loop/README.zh.md、packages/core/agent-loop/src/agent.ts、packages/core/agent/README.zh.md）
+状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/agent-loop/README.zh.md、packages/core/agent-loop/src/agent.ts、packages/core/agent/README.zh.md）｜已对照 0.1.7-rc.1（2026-09-24：inbox 改为 durable 投影 facade、注入服务 5→6（+sessionProjections）、`assistant/chunk` 随 v2 内嵌进 `assistant/message`，见 [durable-inbox.zh.md](../mechanisms/durable-inbox.zh.md) 与 [session-format.zh.md](../mechanisms/session-format.zh.md)）
 
 ## 事实源（链接，不复述）
 
@@ -14,8 +14,8 @@
 ## 关键实体（逐个链接到 home）
 
 - `AgentLoop`（`ctx.agentLoop`）：循环服务，`create()`（同步，不 run setup）+ 实现 `AgentFactory`。
-- `ReactLoopAgent` / inbox / 运行控制：**包内部实现**，不导出（第 56 行「包根只导出插件/服务/配置约定，不提供 `./src/*` 逃逸路径」）。
-- 注入的 5 个服务：`agents`、`sessions`、`llm`、`tools`、`systemPrompt`（第 30 行）。
+- `ReactLoopAgent` / `ReactLoopInbox` / 运行控制：**包内部实现**，不导出（第 56 行「包根只导出插件/服务/配置约定，不提供 `./src/*` 逃逸路径」）。inbox 是 durable 投影 facade（`agent/inbox/spliced` 事件 + `inbox` 投影 + `ReactLoopInbox`），详见 [durable-inbox.zh.md](../mechanisms/durable-inbox.zh.md)。
+- 注入的 6 个服务：`agents`、`sessions`、`llm`、`tools`、`systemPrompt`、`sessionProjections`（0.1.7-rc.1 起 +`sessionProjections`，用于注册 `turnBoundary` 与 `inbox` 两个投影单元）。
 
 ## 核心重点一：全篇最硬的一句话（第 7 行）
 
@@ -65,14 +65,13 @@ turn() ────────────────────────�
     ● append step/start                             │
     ● append user/message（每条）                    │
     step()：                                        │
-      renderPrompt → system                         │
+      renderPrompt → system/message（surface node 0）│
       buildRequest()：                              │
         ◆ waterfall agent/request（改配置）          │
-        ● append request/header（system/tools）     │
+        ● append request/header（config/tools）     │
         ● append request/context（变化时）           │
       llm.stream(request)：                          │
-        ● append assistant/chunk（逐 chunk）         │
-      ● append assistant/message（sourceEventSeqs）  │
+        ● append assistant/message（内嵌 stream，v2） │
       tool-call? → executeToolCalls → 工具流水线     │
       ◆ waterfall agent/request-error（失败恢复）    │
     ● append step/end                               │
@@ -93,7 +92,7 @@ turn() ────────────────────────�
 | `turn()`（第 246 行） | 开一轮，while 循环跑多 step | `turn/start` 在循环前、`turn/end` 在 finally（**必成对**） |
 | `preStep()`（第 225 行） | claim 输入、assemble 提示词、pre-step waterfall | `agent/pre-step` 是「请求推导前唯一串行链」 |
 | `step()`（第 332 行） | 调模型 + 跑工具 | `assistant/chunk` 逐 chunk、`assistant/message` 带 `sourceEventSeqs` |
-| `buildRequest()`（第 426 行） | 组装请求 + 落 request/header | **`EpochHeader.system` 的写入点**（canonicalHeader） |
+| `buildRequest()`（第 426 行） | 组装请求 + 落 request/header | **`request/header`（config/tools）的写入点**（canonicalHeader；system 已随 v3 进 surface） |
 
 ### 三个精确点
 
@@ -101,14 +100,14 @@ turn() ────────────────────────�
 
 2. **`max-tokens` 的 sticky 语义**（第 285–290 行）：一旦某步 hit max-tokens，后续步骤即使正常完成也不能把 turn 结果降级。
 
-3. **`assistant/message` 带 `sourceEventSeqs: chunkSeqs`**（第 408 行）：引用它由哪些 `assistant/chunk` 组装而来——正是 session 笔记里 `sourceEventSeqs` 语义的落地。
+3. **`assistant/message` 带 `sourceEventSeqs: chunkSeqs`**（第 408 行）：引用它由哪些 `assistant/chunk` 组装而来——正是 session 笔记里 `sourceEventSeqs` 语义的落地。**（0.1.7-rc.1 / v2 再修正）**：`assistant/chunk` 随 v2 内嵌进 `assistant/message.stream`，不再有顶层 chunk 供 `sourceEventSeqs` 引用；流内嵌的写入端是 `assistant-stream.ts` 的 `AssistantStreamAttempt`（accumulator 累积紧凑流 + assembler 组装块）。
 
 ### 持久事件 vs 扩展点（过关标准 ③ 的源码答案）
 
 区分准则与完整回合流图见 [notes/mechanisms/event-persistence.zh.md](../mechanisms/event-persistence.zh.md)；此处只列本包回合流中实际 `append` 与 `dispatch` 的事件清单：
 
-- **持久会话事件**（`session.append`）：`turn/start`、`step/start`、`user/message`、`assistant/chunk`、`assistant/message`、`request/header`、`request/context`、`step/end`、`turn/end`。
-- **实时扩展点**（`dispatch.waterfall`/`serial`/`emit`，不落日志）：`agent/pre-step`、`agent/request`、`agent/request-error`、`agent/turn-stopping`、`agent/status`、`agent/inbox/*`。
+- **持久会话事件**（`session.append`）：`turn/start`、`step/start`、`system/message`、`user/message`、`assistant/message`（内嵌 stream）、`request/header`、`request/context`、`step/end`、`turn/end`、`agent/inbox/spliced`。
+- **实时扩展点**（`dispatch.waterfall`/`serial`/`emit`，不落日志）：`agent/pre-step`、`agent/request`、`agent/request-error`、`agent/turn-stopping`、`agent/status`、`agent/inbox/inserted`/`claimed`/`discarded`（live 通知，不带 placement/outcome）。
 
 ## 我曾经的误解（原以为 → 实际是 → 修正来源）——本笔记的黄金内容
 
@@ -120,7 +119,7 @@ turn() ────────────────────────�
 
 ## 与相邻单元的关系
 
-- **依赖**：`agents`、`sessions`、`llm`、`tools`、`systemPrompt`（5 个接口服务，第 30 行）。
+- **依赖**：`agents`、`sessions`、`llm`、`tools`、`systemPrompt`、`sessionProjections`（6 个接口服务；0.1.7-rc.1 起 +`sessionProjections`）。
 - **被谁依赖**：无人直接依赖它（扩展插件依赖 `agent` 接口，不依赖 `agent-loop`）——这是「loop 可替换」的关键。
 
 ## 设计红线

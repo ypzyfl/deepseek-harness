@@ -48,7 +48,7 @@ learning-path 阶段 5 给出二选一：工具路径（`adding-a-tool`）或包
 - [ ] 读懂「角色命名表」（Controller / Store / Registry / Provider / Backend…）与「三角色独立演化才拆包」的判据，与阶段 4 已建立的 seam 认知对照
 - [ ] 看懂第 5 步验证命令串：`pnpm install` → `doc-sync` → `constraints && typecheck && lint` → `build && hygiene`
 
-> 若只走工具路径，2b 可跳过；本阶段过关标准①只要求「所选指南」的 verify 步骤通过，选哪条就做哪条。前端节点（`adding-a-conversation-node`）与模型适配器（`adding-an-llm-adapter`）仅在目标是对应方向时才回读，本计划默认不覆盖。
+> 若只走工具路径，2b 可跳过；本阶段过关标准①只要求「所选指南」的 verify 步骤通过，选哪条就做哪条。前端节点（conversation 子系统）与模型适配器（`adding-an-llm-adapter`）仅在目标是对应方向时才回读，本计划默认不覆盖。
 
 ## 第 3 步：动手实现（走完所选指南全部编号 verify 步骤）
 

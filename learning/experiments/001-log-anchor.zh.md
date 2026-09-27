@@ -11,8 +11,8 @@
 
 ## 材料
 
-- 日志本体（33 行，mock 模型跑出的完整 turn）：[session.expected.jsonl](../../examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl)
-- 这份期望输出的比对者（阶段 6 深读）：[headless.snapshot.ts](../../examples/headless-agent/tests/headless.snapshot.ts)
+- 日志本体（33 行，mock 模型跑出的完整 turn）：[session.expected.jsonl](../../apps/cli/tests/profiles/headless/tests/expected/headless-profile/session.expected.jsonl)
+- 这份期望输出的比对者（阶段 6 深读）：[headless.snapshot.ts](../../snapshots/session/headless.snapshot.ts)
 
 ## 操作（五步，约 3 小时）
 

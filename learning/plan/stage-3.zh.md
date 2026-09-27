@@ -55,7 +55,7 @@ scope → session → system-prompt → tools → agent → agent-default-model 
 
 在一段 replay 的会话日志（或一次真实 turn 的日志）里，对照 architecture.zh.md 的 Turn flow 文本图，逐事件追踪 `turn/start` → `turn/end`，标出哪些是**持久会话事件**、哪些是**存活扩展点**（live extension point，只存在于进程内、不落日志）。
 
-可用素材：无 key 环境下，用阶段 1/阶段 0 已有的日志锚点，或 `examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl`（keyless 快照期望日志，占位符化、可读）。
+可用素材：无 key 环境下，用阶段 1/阶段 0 已有的日志锚点，或 `apps/cli/tests/profiles/headless/tests/expected/headless-profile/session.expected.jsonl`（keyless 快照期望日志，占位符化、可读）。
 
 - [x] 拿到一份可逐事件对照的日志（`session.expected.jsonl`，33 行）
 - [x] 从 `turn/start` 追到 `turn/end`，标出持久事件与扩展点（见 [experiments/003-turn-trace.zh.md](../experiments/003-turn-trace.zh.md)）

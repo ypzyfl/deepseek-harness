@@ -222,6 +222,8 @@ dsh plugin --profile web add link:<my-dsh 包绝对路径>
 
 `link:` 是 symlink（源目录编辑直接可见，dev 正解）；`file:` 是复制（改代码需重装，不利于 debug）。相对路径会被 `anchorPathSpec` 锚定到调用 cwd，统一用绝对路径。之后**重启 dsh**（`pkgMeta` 负缓存含「非 client 包」结论，插件集变更只在重启后生效）。
 
+**版本兼容性校验（0.1.7-rc.1 起）**：`dsh plugin add` 在 pnpm 运行**之前**会校验 DSH peer 兼容性——本地路径（`link:`）读插件自己 `package.json` 的 `peerDependencies`，不兼容的 DSH peer（如 `@deepseek-ai/dsh-*`、`@deepseek-ai/cordis`）会直接拒绝安装（`incompatible-version` 码，点名 package/version/runtimeVersion/peers），pnpm 不下载、不跑 build script。因此仓外插件的 peer 范围必须覆盖当前 DSH runtime（对齐 dsh 仓 lockfile 的实际版本，别写会漂移的宽范围）。确需装不兼容插件时，在 profile 目录写 `compatibility.json` 豁免 + `dsh plugin --profile <name> allow-version <pkg@version> --dsh-version <runtime> --accept-risk`（精确版本对 + 显式接受风险）。启动时另有独立检查（见 app-boot 的 range semantics）。
+
 **启动（三选一，都必须带 `DSH_HOME`）**：
 
 - 终端：`my-dsh\scripts\dev-web.cmd`（封装 set + cd dsh 仓 + `pnpm dsh web`，已建）

@@ -1,5 +1,7 @@
 # 实验 002：llm-inspector 插件——观察发给 LLM 的完整数据
 
+> ⚠️ **包已删除（0.1.7-rc.1）**：`packages/experimental/llm-inspector` 已从仓库移除，下方「材料」链接与「操作」命令全部失效。实验的**观察结论**（`options.system` / `options.messages` / `options.tools` 的完整形态）仍有效，但重跑需自建等价观察器。本文件作为历史实验记录保留，不再更新失效路径。
+
 - 日期：2026-08-22
 - 状态：已完成
 - 前置：需要 `DEEPSEEK_API_KEY`（观察对象是真实模型调用）

@@ -1,6 +1,6 @@
 # 认知地图
 
-状态：草稿（2026-08-17，完成实验 001 日志锚点后首次落笔）｜已对照 rc.8（2026-08-21 版本对齐，补 LLM 缝推理回传/图片、横切机制取消收尾两处增量，断层新增 agent-loop 取消收尾待补）｜已对照 rc.2（2026-08-22 版本对齐，LLM 缝图片维度重构：Files API 为主、上限策略化、文本模型投影，见「rc.2 增量」；core 七包与 Agent Teams 源码无变化，其余结论仍成立）｜阶段 4 快照（2026-08-23，补「能力缝结构」：三角色对齐机制、scope 两级扁平、换 Provider 与能力面扩展两案例、seam 三篇笔记分工）｜已对照 0.1.2-alpha.2（2026-09-01 版本对齐，section order 集中化、工具呈现模式 code→ptc、request/header 加 series、session projection 进 spine，见下方「0.1.2-alpha.2 增量」；core 七包结构、SESSION_FORMAT_VERSION=0、五层架构主干结论仍成立）｜已对照 0.1.2-alpha.3 + 0.1.2-alpha.4（2026-09-02 版本对齐，JSONL-only 会话持久化、turnOutline 投影单元、seq/log offset 类型分离、base 默认 web_fetch、subagent steer 统一投递、PTC preset 去 workflow，见下方「0.1.2-alpha.3/4 增量」；core 七包结构、五层架构主干、日志三层模型、「模型可见 ⟺ logged」结论仍成立）
+状态：草稿（2026-08-17，完成实验 001 日志锚点后首次落笔）｜已对照 rc.8（2026-08-21 版本对齐，补 LLM 缝推理回传/图片、横切机制取消收尾两处增量，断层新增 agent-loop 取消收尾待补）｜已对照 rc.2（2026-08-22 版本对齐，LLM 缝图片维度重构：Files API 为主、上限策略化、文本模型投影，见「rc.2 增量」；core 七包与 Agent Teams 源码无变化，其余结论仍成立）｜阶段 4 快照（2026-08-23，补「能力缝结构」：三角色对齐机制、scope 两级扁平、换 Provider 与能力面扩展两案例、seam 三篇笔记分工）｜已对照 0.1.2-alpha.2（2026-09-01 版本对齐，section order 集中化、工具呈现模式 code→ptc、request/header 加 series、session projection 进 spine，见下方「0.1.2-alpha.2 增量」；core 七包结构、SESSION_FORMAT_VERSION=0、五层架构主干结论仍成立）｜已对照 0.1.2-alpha.3 + 0.1.2-alpha.4（2026-09-02 版本对齐，JSONL-only 会话持久化、turnOutline 投影单元、seq/log offset 类型分离、base 默认 web_fetch、subagent steer 统一投递、PTC preset 去 workflow，见下方「0.1.2-alpha.3/4 增量」；core 七包结构、五层架构主干、日志三层模型、「模型可见 ⟺ logged」结论仍成立）｜已对照 0.1.7-rc.1（2026-09-24 版本对齐，session format v0→v4：`SESSION_FORMAT_VERSION` 0→4 并长成 writer/generator/finalization/release 四层体系、surface 事件三类→五类、系统提示词从 request/header 升格为 surface 的 `system/message`（node 0）、工具结果升格 tool-role、`assistant/chunk` 内嵌进 `assistant/message`，见下方「0.1.7-rc.1 增量」；core 七包结构、五层架构主干、日志三层模型、「模型可见 ⟺ logged」结论仍成立）
 
 ## 提纲（已知 / 未知 / 猜测）
 
@@ -95,6 +95,15 @@ flowchart LR
 - **base 默认暴露 web_fetch**（alpha.4）：`bundle/base` 的 `cordis.patch.yml` 默认挂载 `tool-web`（`fetch: true` + 60s 搜索超时），headless / SDK / ACP / base-only profile 均继承 `web_search` + `web_fetch`（`sdk-minimal` 不用 base 除外）；web-app 禁用该 base 项、按 agent preset 组装同对工具。效果：基于 base 的模型请求默认暴露抓取 schema 与 prompt 指引，快照 header 同步变化。
 - **subagent steer 统一 adjacent agent 投递**（alpha.4）：steer 到同进程 adjacent agent 的投递路径统一，跟随消息的图片可靠送达（此前部分路径丢图）。能力面行为变化，spine/seam 结构结论不变。
 - **PTC mode 移除 workflow**（alpha.4）：preset 的 PTC 组合不再含 workflow 工具。
+
+**0.1.7-rc.1 增量**（2026-09-24 对照 0.1.2-alpha.4→0.1.7-rc.1 diff 记录；session format + agent-loop + agent-presets 部分，详见 [notes/mechanisms/session-format.zh.md](notes/mechanisms/session-format.zh.md)、[notes/mechanisms/durable-inbox.zh.md](notes/mechanisms/durable-inbox.zh.md) 与 [notes/architecture/declarative-agent-presets.zh.md](notes/architecture/declarative-agent-presets.zh.md)）：
+- **`SESSION_FORMAT_VERSION` 0→4，长成四层体系**：writer 常量（=4）只是其中一环，周围还有 catalog 生成器（从迁移包 package.json 生成 `generated.ts`）、finalization（已接受兼容基线=4，checkpoint `v4.json`）、release（已发布=3，`evidenceTag: dsh-v0.1.5-alpha.1`）。新增 `session-format`（邻接迁移协议库）+ `session-format-catalog`（build-static 装配）+ 四个迁移包 v0→v1 / v1→v2 / v2→v3 / v3→v4。
+- **v2：`assistant/chunk` 内嵌进 `assistant/message`**：chunk 从顶层事件降为消息的 `stream` 字段，失败/取消 attempt 记 log-only 的 `assistant/attempt`。「chunk 保流式保真、assistant/message 是聚合投影」的结论不变，但 chunk 不再是独立顶层事件。
+- **v3：系统提示词升格为 surface 消息**：`system/message` 成为 surface node 0（第一个 step 的第一条消息），`EpochHeader` 不再有 `system` 字段；prompt 变化走 replace node 0，触发 `reason: 'series'`（而非 `change`）。「提示词装配」一节里「主请求装 system」的来源从 header 字段变成 surface 消息。
+- **v4：工具结果升格 tool-role**：`tool/result` 的 message 从 role=user 改 role=tool（去掉 `tool-result` 包装块）；新增 `developer/message`（工具变更指令）。surface 事件三类→五类（system/user/developer/assistant/tool-role）。
+- **流式邻接迁移**：整块迁移会让 116MB 日志（914 万 v0 事件）OOM，改为流式 Stage——单遍、有界内存、`transformRun` 直接消费紧凑束。旧世代永不改写（`session.vN.jsonl`），只写最终当前世代。
+- **agent-loop durable Inbox**：inbox 从内存队列改为「以 `agent/inbox/spliced` 事件为唯一真源、`inbox` 投影重建」的事件溯源机制——崩溃/重启后 pending 输入不丢（resume 读文件→seed 重建 Session→投影惰性折叠重放 spliced→重建队列）；`claim` 是 pre-step 决策前的原子所有权转移；注入服务 5→6（+`sessionProjections`）。
+- **agent-presets 重组**：preset 从「包内硬编码目录」（`agent-presets` 复数，删除）改为「普通 Cordis YAML 插件行」（`agent-preset` 声明 + `agent-preset-registry` 代际/释放）——eager 激活建隔离 scope + 内存 Loader 树（代际），更新/删除只退役旧代际、引用计数归零才销毁；scope 父子链 + isolate realm 让一个进程安全跑多个不同组合。
 
 ### 提示词装配（投影）
 

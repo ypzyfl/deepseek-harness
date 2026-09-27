@@ -24,6 +24,8 @@
 | `agent-default-model` | 默认模型选择 | `ctx.agentDefaultModel` | 第 2 层 |
 | `agent-loop` | 默认具体 agent 驱动器 | `ctx.agentLoop` | 第 2 层 |
 
+> 0.1.7-rc.1 起 `packages/core/README.md` 正式列 **8 个包**：上表 7 包之外，还有 `agent-tool-presentation/`（"Per-agent tool-presentation selector for presets"，**无 ctx key**，语义上属 preset 生态）。它不在「scope → 注册表 → agent 三件套」的三层主干里，故本笔记的「七包三层」仍指默认控制主干，与 README 的「8 包」不冲突。
+
 ## 两套「分层」不要混淆
 
 本笔记上表的「第 0/1/2 层」是 core **七包内部**的依赖分层（scope → 注册表 → 执行者），与 [learning-path.zh.md](../../learning-path.zh.md) 阶段 1 的「L0–L4 五层」是**两套不同的编号**：
@@ -83,5 +85,5 @@ flowchart TB
 
 ## 遗留问题（登记进 questions.zh.md）
 
-- ~~目录里有 `agent-tool-presentation` 包，但 core README 表格未列——是遗漏、还是属于别的组？~~ **已查清**：`agent-tool-presentation` 是 preset 的「工具呈现方式」声明插件（`native`/`ptc`/`both`，调 `ctx.tools.presentAs()`），语义上挂在 preset 生态，不属于默认控制主干的 7 个包，故 core README 表格未列是文档有意安排，非遗漏。
+- ~~目录里有 `agent-tool-presentation` 包，但 core README 表格未列——是遗漏、还是属于别的组？~~ **已查清（0.1.7-rc.1 再更新）**：`agent-tool-presentation` 是 preset 的「工具呈现方式」声明插件（`native`/`ptc`/`both`，调 `ctx.tools.presentAs()`），语义上挂在 preset 生态、无 ctx key。**现 core README 已把它正式列为第 8 个包**（"Per-agent tool-presentation selector for presets"），但「默认控制主干」仍是 7 包（它不在 scope → 注册表 → agent 三层主干里）——旧结论「README 未列是文档有意安排」已被这一升列推翻。
 - `scope` 的「作用域原语」具体机制尚未深读（第 0 层只知其名）。

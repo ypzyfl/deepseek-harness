@@ -1,6 +1,6 @@
 # system-prompt 学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/system-prompt/README.zh.md、packages/core/system-prompt/src/index.ts、packages/core/tools/README.zh.md）
+状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/system-prompt/README.zh.md、packages/core/system-prompt/src/index.ts、packages/core/tools/README.zh.md）｜已对照 0.1.7-rc.1（2026-09-24：系统提示词从 `EpochHeader.system` 升格为 surface 的 `system/message`，见 [session-format.zh.md](../mechanisms/session-format.zh.md)）
 
 ## 事实源（链接，不复述）
 
@@ -30,7 +30,7 @@
 
 4. **原以为** agent 作用域对 persona 和 tools 的机制相同（都是「遮蔽」）；**实际是** persona 只有「遮蔽」，而 tools 有**三种**操作：`restrict`（allow/deny 过滤全局）、遮蔽（同名覆盖）、扩展注册（新增本地工具），且顺序是「先过滤全局 → 再遮蔽 → 再叠加本地」。修正来源：tools README 第 20–23 行。
 
-5. **原以为** 「系统提示词」和「请求信封」是两回事；**实际是** 系统提示词就是 `EpochHeader.system`，是请求信封（config + system + tools）的一个字段，走 `request/header` → `foldRequestHeader()` 这套重建（不是 surface 那套）。修正来源：session.zh.md 第 160、168–177 行（见 [log.zh.md](../mechanisms/log.zh.md)）。
+5. **原以为** 「系统提示词」和「请求信封」是两回事；**实际是**（0.1.2-alpha.4 之前）系统提示词就是 `EpochHeader.system`，是请求信封（config + system + tools）的一个字段，走 `request/header` → `foldRequestHeader()` 这套重建（不是 surface 那套）。修正来源：session.zh.md 第 160、168–177 行（见 [log.zh.md](../mechanisms/log.zh.md)）。**（0.1.7-rc.1 再修正）**：v3 起系统提示词升格为 surface 的 `system/message`（node 0），`EpochHeader` 不再有 `system` 字段（只剩 config/tools）——它现在是 `deriveMessages()` 折叠出的 wire message 0，走 surface 这套，不再走 `foldRequestHeader()`。见 [log.zh.md](../mechanisms/log.zh.md)「系统提示词进 surface」。
 
 6. **原以为** section 的 `order` 是各插件各自约定俗成的数值区间（`-100` 身份、`0` persona、`100–199` 工具引导）；**实际是**（0.1.2-alpha.2 起）order 由 system-prompt 包**集中分配**的 `SECTION_ORDERS` 命名常量表（`HARNESS_IDENTITY:-1000`…`TOOLS_SDK:5000`…`STRUCTURED_OUTPUT:9900`）管理，插件经 `getSectionOrder(name)`/`getContextOrder(name)` 取位置，同 order 按 code-unit 名称排序。这改变了「谁决定顺序」的心智模型——从「约定俗成」到「集中分配稳定位置名」。修正来源：src/index.ts 的 `SECTION_ORDERS`/`CONTEXT_ORDERS` 表。
 
@@ -38,7 +38,7 @@
 
 - **依赖**：`scope`（`ScopedLayers` 做段/变量的作用域分层）、`llm`（`ToolSchema` 类型）。
 - **被谁依赖**：`agent-loop` 是主要消费方（每步 `assemble()` + `renderPrompt()`）；`tools` 注册表通过 `ctx.systemPrompt.tools()` 自动贡献 schema；`tool` 插件贡献工具引导段（`tool:bash` 等）。
-- **与 session 的关系**：`renderPrompt()` 的产物写入 `request/header` 的 `EpochHeader.system`，是「两套重建机制」里第二套的输入。
+- **与 session 的关系**：`renderPrompt()` 的产物（0.1.7-rc.1 / v3 起）落成 surface 的 `system/message`（node 0），是 `deriveMessages()` 折叠出的 wire message 0；此前它写入 `request/header` 的 `EpochHeader.system`。见 [log.zh.md](../mechanisms/log.zh.md)。
 
 ## 设计红线
 

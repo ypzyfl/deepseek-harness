@@ -1,6 +1,6 @@
 # 事件持久性（event persistence）学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 experiments/003-turn-trace.zh.md、packages/core/agent-loop/src/agent.ts、packages/llm/llm/src/index.ts）｜已对照 0.1.2-alpha.4（2026-09-02：扩展点语义与持久/扩展判据无变化；agent.ts/llm index.ts 行号随 seq/log-offset 重构漂移，已刷新）
+状态：草稿 | 已对照验证（2026-08-22 对照 experiments/003-turn-trace.zh.md、packages/core/agent-loop/src/agent.ts、packages/llm/llm/src/index.ts）｜已对照 0.1.2-alpha.4（2026-09-02：扩展点语义与持久/扩展判据无变化；agent.ts/llm index.ts 行号随 seq/log-offset 重构漂移，已刷新）｜已对照 0.1.7-rc.1（2026-09-24：surface 事件三类→五类，`assistant/chunk` 随 v2 内嵌进 `assistant/message`；「持久 vs 扩展点」判据不变，见 [session-format.zh.md](session-format.zh.md)）
 
 ## 事实源（链接，不复述）
 
@@ -116,7 +116,7 @@ harness 的事件分两类，本质不同：**持久会话事件**是「已经�
 - seq 20 `tool/result`（工具结果）
 - seq 29 `assistant/message`（step 2 最终回复）
 
-一个不多一个不少，精确对应 `SURFACE_EVENT_TYPES = ['user/message', 'assistant/message', 'tool/result']`。
+一个不多一个不少，精确对应旧格式（v0）的 `SURFACE_EVENT_TYPES = ['user/message', 'assistant/message', 'tool/result']`。**注意**：这份 33 行日志是 0.1.2-alpha.4 的 v0 快照；0.1.7-rc.1（session format v3/v4）起 surface 事件扩为五类（+`system/message`、`developer/message`，`tool/result` 的 message 改 role=tool）。旧日志没有 `system/message` 是因为它记录的是「系统提示词还藏在 `request/header` 里」的旧格式——「哪些事件进 surface」的事实变了，但「持久 vs 扩展点」的判据（位置×作用）不变。见 [session-format.zh.md](session-format.zh.md)。
 
 ## 我曾经的误解（原以为 → 实际是 → 修正来源）——本笔记的黄金内容
 

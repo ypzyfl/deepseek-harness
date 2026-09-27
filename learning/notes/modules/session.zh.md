@@ -1,6 +1,6 @@
 # session 学习笔记
 
-状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/session/README.zh.md、packages/core/session/src/index.ts、packages/core/session/src/surface.ts、packages/core/agent-loop/src/agent.ts、packages/core/agent-loop/src/invariant.ts、packages/client/ui-trajectory/README.zh.md）｜已对照 0.1.2-alpha.4（2026-09-02：行为无变化；`surface.nodes` 的 seq 现在是 `SessionSeq` brand，`SessionHeader.seedLength` 移除，行号引用刷新）
+状态：草稿 | 已对照验证（2026-08-22 对照 packages/core/session/README.zh.md、packages/core/session/src/index.ts、packages/core/session/src/surface.ts、packages/core/agent-loop/src/agent.ts、packages/core/agent-loop/src/invariant.ts、packages/client/ui-trajectory/README.zh.md）｜已对照 0.1.2-alpha.4（2026-09-02：行为无变化；`surface.nodes` 的 seq 现在是 `SessionSeq` brand，`SessionHeader.seedLength` 移除，行号引用刷新）｜已对照 0.1.7-rc.1（2026-09-24：surface 事件三类→五类，见 [session-format.zh.md](../mechanisms/session-format.zh.md)）
 
 ## 事实源（链接，不复述）
 
@@ -12,13 +12,13 @@
 
 ## 它是什么（用自己的话）
 
-`session` 是 core 七包里的事件溯源核心：`Session` 是一份**仅追加（append-only）的会话事件日志**，是 agent 全部交互的唯一真源；在这份日志之上维护一个 **surface 层**（只筛出「会产生消息」的 3 类事件、存它们的 seq 序号），`deriveMessages()` 从 surface 投影出要发给 LLM 的消息历史。`SessionStore`（`ctx.sessions`）创建并持有这些 `Session` 实例，持久化由订阅 `session/event` 的插件负责，本包不实现持久化。
+`session` 是 core 七包里的事件溯源核心：`Session` 是一份**仅追加（append-only）的会话事件日志**，是 agent 全部交互的唯一真源；在这份日志之上维护一个 **surface 层**（只筛出「会产生消息」的 5 类事件、存它们的 seq 序号），`deriveMessages()` 从 surface 投影出要发给 LLM 的消息历史。`SessionStore`（`ctx.sessions`）创建并持有这些 `Session` 实例，持久化由订阅 `session/event` 的插件负责，本包不实现持久化。
 
 ## 关键实体（逐个链接到 home）
 
 - `Session`（普通类，非 Service）：仅追加日志 + surface 管理器 + 派生消息缓存。
 - `SessionStore`（`ctx.sessions`）：创建/持有 `Session`，`create`/`fork`/`get`/`list`/`flush`。
-- `SessionSurface` / `SurfaceManager`：surface 层，`nodes` 只存 3 类消息事件的 seq 序号。
+- `SessionSurface` / `SurfaceManager`：surface 层，`nodes` 只存 5 类消息事件的 seq 序号。
 - `deriveMessages()`：从 surface.nodes 取序号 → 去 log 取消息 → 返回 `Message[]`。
 - `deriveEventMessage(event)`：单个事件的投影规则（surface.ts 第 90 行起）。
 - `SessionEventMap`：可声明合并扩展的事件词汇（三项前置检查 ③ 的落点）。
@@ -27,7 +27,7 @@
 
 1. **原以为** 原始日志和 surface 是两个分开的存储；**实际是** 它们是**同一个 `Session` 对象里的「数据」和「索引」**——`log: SessionEvent[]` 存全部事件，`SurfaceManager.nodes` 只存 3 类消息事件的 seq 序号，`deriveMessages()` 用序号去 log 取消息。修正来源：src/index.ts 第 426 行起（`Session` 成员）、第 790 行起（`deriveMessages()`）。
 
-2. **原以为** surface 的「3 类消息事件」是凭经验归类；**实际是** 源码硬编码 `SURFACE_EVENT_TYPES = ['user/message', 'assistant/message', 'tool/result']`，其余（chunk/边界/用量）永不进 surface。修正来源：surface.ts 第 22–26 行。
+2. **原以为** surface 的「3 类消息事件」是凭经验归类；**实际是** 源码硬编码 `SURFACE_EVENT_TYPES = ['user/message', 'assistant/message', 'tool/result']`，其余（chunk/边界/用量）永不进 surface。修正来源：surface.ts 第 22–26 行。**（0.1.7-rc.1 再修正）**：这个「三类」在 v3/v4 后被推翻为五类——`system/message`（v3 系统提示词升格）、`developer/message`（v4 工具变更指令）加入，`tool/result` 的 message 改 role=tool（v4）。判据「模型可见 ⟺ 进 surface」不变。见 [session-format.zh.md](../mechanisms/session-format.zh.md)。
 
 3. **原以为** `deriveMessages()` 的目的是「过滤掉不该给 LLM 看的日志」；**实际是** 它是「**投影**」（形态变换：事件 → 消息），过滤只是副作用之一。它做三件事：筛出 3 类消息事件、从事件 envelope 解包 `message`、跳过空 content 的 assistant/message。修正来源：surface.ts 第 90 行起 `deriveEventMessage` 的 switch。
 

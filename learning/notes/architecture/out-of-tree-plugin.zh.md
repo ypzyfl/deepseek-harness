@@ -72,6 +72,7 @@ Loader tree 出现 enabled entry
 | fork 的 `web-poc` | 只新增目录 | 备选（不想每次启动带 `DSH_HOME` 时用） |
 
 - **带 `dsh.bundle` 声明的包（ui-hello 形态）**：`add` 一次完成解析 + 挂载 + 持久化（`reconcilePlugins` 自动挂入 bundles 层），`--patch` 完全不需要；`--patch` 是给**无声明**普通插件补 insert row 的通道（add 只装不挂，会警告「installed as a plain dependency」）。
+- **版本兼容性校验（0.1.7-rc.1 起）**：`add` 在 pnpm 前校验 DSH peer 兼容性——本地路径（`link:`）读插件自身 `package.json` 的 `peerDependencies`，不兼容的 DSH peer 直接拒绝（`incompatible-version`），豁免走 profile 的 `compatibility.json` + `allow-version --accept-risk`。仓外插件的 peer 范围须覆盖当前 DSH runtime（对齐 dsh 仓 lockfile）。
 - **fork 的陷阱——模板按名字查**：`PROFILE_TEMPLATES` 只有 `web`/`headless` 两键。直接 `dsh --profile web-poc` 抛「does not exist」；`dsh plugin --profile web-poc add` 创建走 `DEFAULT_PROFILE_BUNDLES`（仅 `dsh-base`，无 `dsh-web-app`，起不了 web UI）。正解 = 手写三文件：`package.json`（bundles 抄 web 模板）、空 `cordis.patch.yml`、`pnpm-workspace.yaml`（`nodeLinker: hoisted`）；已初始化过 web 则复制目录改名等价。
 - **fork 很轻**：bundle 不装在 profile 里，`healProfilesModuleFallback` 维护共享层 `$DSH_HOME/profiles/node_modules`（app 依赖闭包 symlink），所有 profile 共享解析——fork 目录是「清单」不是「安装」。
 - **`DSH_HOME` 沙箱**：`resolveDshHome` 优先级 configured > `$DSH_HOME` > `~/.dsh`；指到 `my-dsh/.dsh-home` 后沙箱内 profile 名仍叫 `web`（命中模板，auto-init 正确），删目录即回滚。沙箱是**持久** home 而非临时目录（`initProfile` 双重幂等，重启不重跑 pnpm）；断点映射与热更新链路均与 home 位置无关，唯一成本是每次启动带 `DSH_HOME`（漏配则静默连默认 home，插件「全部不存在」）。

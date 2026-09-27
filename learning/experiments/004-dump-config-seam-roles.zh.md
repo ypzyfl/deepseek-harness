@@ -25,7 +25,7 @@ pnpm dsh --profile headless --dump-config
 | Service Provider | `bash-sandbox` → `@deepseek-ai/dsh-bash-sandbox`；`pwsh-sandbox` → `@deepseek-ai/dsh-pwsh-sandbox` | 独立成行 |
 | Consumer | `tool-bash` → `@deepseek-ai/dsh-tool-bash`；`tool-pwsh` → `@deepseek-ai/dsh-tool-pwsh` | 独立成行 |
 
-关键观察：headless profile 用的是**沙箱版** Provider（`bash-sandbox`/`pwsh-sandbox`），不是 `bash-local`。对照 `examples/headless-agent/cordis.yml` 里用的是 `dsh-bash-local`——同一个 `ctx.shell` Def，Provider 从 `bash-local` 换成 `bash-sandbox`，而 Consumer（`tool-bash`）与 Def（`ctx.shell`）不变。这是「换 Provider」的现场实例。
+关键观察：headless profile 用的是**沙箱版** Provider（`bash-sandbox`/`pwsh-sandbox`），不是 `bash-local`。对照 `packages/bundle/base/cordis.patch.yml` 里用的是 `dsh-bash-local`——同一个 `ctx.shell` Def，Provider 从 `bash-local` 换成 `bash-sandbox`，而 Consumer（`tool-bash`）与 Def（`ctx.shell`）不变。这是「换 Provider」的现场实例。
 
 `dsh-shell` 的源码证据（`packages/shell/shell/src/index.ts:65-68`）：
 

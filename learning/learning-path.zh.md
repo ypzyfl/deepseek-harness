@@ -64,7 +64,7 @@ flowchart TB
     subgraph L2["L2 能力层 — 可替换的缝（Service / Provider / Consumer）"]
         direction LR
         C1["模型接入与上下文<br/>llm · context · compaction · goal<br/>schedule · plan · todo · feedback"]
-        C2["执行环境<br/>shell · terminal · subprocess · sandbox<br/>code-runtime · fs · lsp · e2b"]
+        C2["执行环境<br/>shell · terminal · subprocess · sandbox<br/>code-runtime · fs · lsp"]
         C3["知识与外部信息<br/>skill · web · attachment · spill"]
         C4["委派与自我扩展<br/>subagent · workflow · jobs · extensions · hooks"]
         C5["数据与持久化<br/>session · session-query · storage · settings<br/>credentials · identity · workspace"]
@@ -99,7 +99,7 @@ flowchart TB
 - **L2 能力层 — 可替换的缝**：约三十个包，每个能力是一个完整 seam（三角色）。本层铁律：扩展插件只依赖 Service Definition，从不依赖具体 Provider——因此换一个 Provider，整个产品跟着变（如 fs 与 subprocess 共享执行世界，指向远程沙箱时 Bash/PTY/LSP 一起迁移）。深入在阶段 4。
 - **L3 组合层**：把静态的包变成可运行产品。装配序：profile 列出的 bundle 按序应用 → profile `cordis.patch.yml` → home 级 patch → `--patch` 覆盖；每行配置都可被上层整行替换。`dsh-base` 是所有 profile 的第一层（模型适配器、工具、持久化、沙箱与审批、设置、凭据、遥测），`dsh-web-app`/`dsh-headless` 在其上叠加出不同产品形态。
 - **L4 接口层**：装配好的插件树经不同入口对外服务：CLI、Web GUI、ACP 自动化、进程外 JSON-RPC SDK。UI 类消费者驱动 `ctx.agents` 并从 `session/event` 渲染，不碰循环内部。
-- 横切支撑（不参与运行时分层）：`util/`（零依赖工具）、`test-support/`（测试基础设施）、`examples/`（可运行示例）。
+- 横切支撑（不参与运行时分层）：`util/`（零依赖工具）、`test-support/`（测试基础设施）、`snapshots/`（keyless 会话快照基线）。
 
 **每层主要模块及职责**：
 
@@ -120,7 +120,7 @@ flowchart TB
 | 子域 | 包与职责 |
 |---|---|
 | 模型接入与上下文 | `llm`（`ctx.llm` 消息/流词汇 + 适配器缝 + DeepSeek provider）· `context`（模型可见请求上下文：工作区指令、时间）· `compaction`（上下文压缩）· `goal`（会话内目标持久化）· `schedule`（会话内定时追问）· `plan`（计划协作状态）· `todo`（`todo_write` 工具）· `feedback`（人类反馈） |
-| 执行环境 | `shell`（Bash 执行缝 + 本地实现 + 工具）· `terminal`（持久 PTY 会话）· `subprocess`（子进程缝 + 本地进程树）· `sandbox`（进程约束：bwrap/Landlock/Seatbelt）· `code-runtime`（worker 线程代码执行 + PTC mode）· `fs`（文件系统缝 + 文件工具）· `lsp`（语言服务器缝 + `lsp` 工具）· `e2b`（E2B 远程沙箱，POC） |
+| 执行环境 | `shell`（Bash 执行缝 + 本地实现 + 工具）· `terminal`（持久 PTY 会话）· `subprocess`（子进程缝 + 本地进程树）· `sandbox`（进程约束：bwrap/Landlock/Seatbelt）· `code-runtime`（worker 线程代码执行 + PTC mode）· `fs`（文件系统缝 + 文件工具）· `lsp`（语言服务器缝 + `lsp` 工具） |
 | 知识与外部信息 | `skill`（技能注册表 + 目录/加载工具）· `web`（搜索/抓取缝与工具）· `attachment`（附件身份与内容寻址存储）· `spill`（工具结果外溢存储） |
 | 委派与自我扩展 | `subagent`（子 agent 委派缝与工具）· `workflow`（工作流缝 + worker 线程引擎 + `workflow`/`ralph` 工具）· `jobs`（后台任务 + `job_*` 控制工具）· `extensions`（运行时自检与插件挂载——自我修改）· `hooks`（Claude Code/Codex 钩子桥 + wire 协议库） |
 | 数据与持久化 | `session`（持久化缝 + JSONL 后端（0.1.2-alpha.3 起为唯一 first-party 实现，SQLite 后端已移除）、投影、标题、报告）· `session-query`（会话检索：语料、血缘、全文搜索）· `storage`（非会话存储枢纽）· `settings`（用户设置缝 + 文件 provider）· `credentials`（凭据引用缝 + env/.env provider）· `identity`（匿名身份）· `workspace`（工作区实体） |
@@ -231,7 +231,7 @@ scope → session → system-prompt → tools → agent → agent-default-model 
 精读材料：
 
 1. [cookbook/extension-cookbook.zh.md](../docs/cookbook/extension-cookbook.zh.md) — 特征到能力的映射总表。
-2. 按你的目标二选一精读：[cookbook/adding-a-tool.zh.md](../docs/cookbook/adding-a-tool.zh.md) 或 [cookbook/adding-a-package.zh.md](../docs/cookbook/adding-a-package.zh.md)；做前端节点或模型适配器再回读 [adding-a-conversation-node.zh.md](../docs/cookbook/adding-a-conversation-node.zh.md) / [adding-an-llm-adapter.zh.md](../docs/cookbook/adding-an-llm-adapter.zh.md)。
+2. 按你的目标二选一精读：[cookbook/adding-a-tool.zh.md](../docs/cookbook/adding-a-tool.zh.md) 或 [cookbook/adding-a-package.zh.md](../docs/cookbook/adding-a-package.zh.md)；做前端节点或模型适配器再回读 [conversation.zh.md](../docs/subsystems/conversation.zh.md) / [adding-an-llm-adapter.zh.md](../docs/cookbook/adding-an-llm-adapter.zh.md)。
 
 动手任务：完成所选指南的全部编号 verify 步骤；改动若触及模型或产品用户可见行为，同 PR 补一条 keyless snapshot（要求的事实源在 [testing.zh.md](../docs/testing.zh.md) "When a snapshot test is required" 一节，本阶段只需照做，阶段 6 讲为什么）。
 
@@ -245,7 +245,7 @@ scope → session → system-prompt → tools → agent → agent-default-model 
 
 1. [testing.zh.md](../docs/testing.zh.md) — 全文精读，这是 key 策略的唯一事实源（根 AGENTS.md 明确 "testing.md owns key policy"）。
 2. [postmortem/0001](../docs/postmortem/0001-acp-default-export-drops-inject.zh.md) — snapshot 层存在理由的实例。
-3. [examples/AGENTS.md](../examples/AGENTS.md) — 每个示例自带 keyless 与 with-key 冒烟。
+3. [snapshots/AGENTS.md](../snapshots/AGENTS.md) — keyless 会话快照基线的归属约定。
 
 keyless 策略要点（每条的权威定义都在上面的链接里，此处仅导航）：
 

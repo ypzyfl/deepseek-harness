@@ -1,6 +1,6 @@
 # 会话投影（session-projection）机制
 
-状态：草稿 | 已对照验证（2026-09-01 对照 packages/session/session-projection/src/index.ts、src/types.ts、README.zh.md、packages/core/agent-loop/src/index.ts、src/agent.ts、packages/core/agent/src/projection.ts）｜已对照 0.1.2-alpha.4（2026-09-02：注册表机制无变化；0.1.2-alpha.3 新增第二个投影单元 `turnOutline`，见「实例」节补充）
+状态：草稿 | 已对照验证（2026-09-01 对照 packages/session/session-projection/src/index.ts、src/types.ts、README.zh.md、packages/core/agent-loop/src/index.ts、src/agent.ts、packages/core/agent/src/projection.ts）｜已对照 0.1.2-alpha.4（2026-09-02：注册表机制无变化；0.1.2-alpha.3 新增第二个投影单元 `turnOutline`，见「实例」节补充）｜已对照 0.1.7-rc.1（2026-09-24：三套投影表里 surface 事件三类→五类、request/header 不再含 system，见 [session-format.zh.md](session-format.zh.md)）
 
 ## 事实源（链接，不复述）
 
@@ -32,8 +32,8 @@
 
 | 投影 | 输入事件 | 产出 | 服务谁 |
 |---|---|---|---|
-| surface | 3 类消息事件 | 消息历史 `Message[]` | 模型 |
-| request/header | `EpochHeader` | 请求信封（config+system+tools） | 模型 |
+| surface | 5 类消息事件（system/user/developer/assistant/tool-role） | 消息历史 `Message[]`（含系统提示词） | 模型 |
+| request/header | `EpochHeader` | 请求信封（config+tools） | 模型 |
 | sessionProjections | 全部已提交事件 | 派生状态（todo/goal/turn 边界） | 客户端 / 宿主 |
 
 前两者服务「模型可见 ⟺ logged」（**重建**请求），第三者服务「客户端可见的派生状态」（**折叠**状态）。「投影」这个词在 harness 里是两种正交含义，不能混为一谈。

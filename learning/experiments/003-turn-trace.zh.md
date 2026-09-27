@@ -3,7 +3,7 @@
 - 日期：2026-08-22
 - 状态：已完成
 - 前置：阶段 3 第 2 步（七包已读）+ 回合流源码走通（`agent-loop/src/agent.ts`）
-- 材料：[examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl](../../../examples/headless-agent/tests/snapshots/headless-profile/session.expected.jsonl)（keyless 快照日志，33 行）
+- 材料：[session.expected.jsonl](../../apps/cli/tests/profiles/headless/tests/expected/headless-profile/session.expected.jsonl)（keyless 快照日志，33 行）
 - 对应路线：阶段 3 第 3 步「逐事件追踪」动手任务；过关标准 ③
 
 ## 假设
